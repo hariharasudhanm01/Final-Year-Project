@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - InternMatch{% endblock %}
+
+{% block content %}
+<div class="with-sidebar">
+  <div class="top-nav">
+    <h1>InternMatch</h1>
+    <div class="user-avatar">
+      {{ (user.full_name or user.username)[0]|upper if user else 'U' }}
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <nav>
+      <ul>
+        <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="/profile" class="active"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="/upload"><i class="fas fa-upload"></i> Upload Resume</a></li>
+        <li><a href="/apply"><i class="fas fa-file-alt"></i> Application Form</a></li>
+        <li><a href="/dashboard"><i class="fas fa-briefcase"></i> Recommended Internships</a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="content">
+      <h1><i class="fas fa-user-edit"></i> Edit Profile</h1>
+
+      <div class="card">
+        <form action="/profile" method="post">
+          <div class="form-group">
+            <label for="degree">Degree:</label>
+            <input type="text" id="degree" name="degree" value="{{ profile.degree if profile else '' }}" placeholder="e.g., B.Tech">
+          </div>
+          <div class="form-group">
+            <label for="study_year">Study Year:</label>
+            <input type="number" id="study_year" name="study_year" value="{{ profile.study_year if profile else '' }}" min="1" max="5" placeholder="e.g., 3">
+          </div>
+          <div class="form-group">
+            <label for="sector">Sector:</label>
+            <input type="text" id="sector" name="sector" value="{{ profile.sector if profile else '' }}" placeholder="e.g., Technology">
+          </div>
+          <div class="form-group">
+            <label for="stream">Stream:</label>
+            <input type="text" id="stream" name="stream" value="{{ profile.stream if profile else '' }}" placeholder="e.g., Computer Science">
+          </div>
+          <div class="form-group">
+            <label for="skills">Skills (comma-separated):</label>
+            <textarea id="skills" name="skills" placeholder="e.g., Python, JavaScript, SQL">{{ profile.skills if profile else '' }}</textarea>
+          </div>
+          <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn">Update Profile</button>
+            <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

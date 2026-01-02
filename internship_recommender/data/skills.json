@@ -1,0 +1,67 @@
+{
+  "Python Developer": ["Python", "Flask", "Django", "SQL", "Git", "REST API", "PostgreSQL", "MongoDB", "Docker", "AWS"],
+  "Data Analyst": ["Python", "Excel", "SQL", "Tableau", "Power BI", "Statistics", "Pandas", "NumPy", "Matplotlib", "R"],
+  "Frontend Developer": ["HTML", "CSS", "JavaScript", "React", "Vue.js", "Angular", "Git", "TypeScript", "Bootstrap", "SASS"],
+  "Backend Developer": ["Python", "Java", "Node.js", "SQL", "MongoDB", "Redis", "Docker", "AWS", "Microservices", "REST API"],
+  "Full Stack Developer": ["Python", "JavaScript", "React", "Django", "SQL", "Git", "Docker", "AWS", "HTML", "CSS"],
+  "Data Scientist": [
+    "Python", "Pandas", "NumPy", "Scikit-Learn", "TensorFlow", "PyTorch",
+    "Machine Learning", "Deep Learning", "Statistics", "SQL", "Matplotlib",
+    "Seaborn", "Data Visualization", "Jupyter", "R", "Apache Spark"
+  ],
+  "Machine Learning Engineer": [
+    "Python", "TensorFlow", "PyTorch", "Scikit-Learn", "Pandas", "NumPy",
+    "Machine Learning", "Deep Learning", "Docker", "AWS", "MLOps", "Kubernetes"
+  ],
+  "DevOps Engineer": ["Docker", "Kubernetes", "AWS", "Jenkins", "Git", "Linux", "Python", "Terraform", "Ansible", "CI/CD"],
+  "Cloud Engineer": ["AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "Python", "Linux", "Networking", "Security"],
+  "UI UX Designer": [
+    "Figma", "Adobe XD", "Sketch", "Wireframing", "Prototyping",
+    "User Research", "Usability Testing", "Information Architecture",
+    "Interaction Design", "Visual Design", "Adobe Photoshop", "Illustrator"
+  ],
+  "UI Designer": [
+    "Figma", "Adobe XD", "Sketch", "Visual Design", "Typography",
+    "Color Theory", "Design Systems", "Prototyping", "Adobe Photoshop", "Illustrator"
+  ],
+  "UX Designer": [
+    "User Research", "Wireframing", "Prototyping", "Usability Testing",
+    "Information Architecture", "Interaction Design", "Figma", "Adobe XD"
+  ],
+  "Product Manager": [
+    "Product Strategy", "User Research", "Analytics", "SQL", "Figma",
+    "Agile", "Scrum", "Market Research", "Data Analysis", "Communication"
+  ],
+  "Business Analyst": [
+    "SQL", "Excel", "Power BI", "Tableau", "Python", "Statistics",
+    "Data Analysis", "Business Intelligence", "Requirements Gathering", "Documentation"
+  ],
+  "Cybersecurity Analyst": [
+    "Network Security", "Python", "Linux", "SIEM", "Penetration Testing",
+    "Risk Assessment", "Incident Response", "Firewall", "VPN", "Encryption"
+  ],
+  "Mobile App Developer": [
+    "React Native", "Flutter", "Swift", "Kotlin", "JavaScript", "iOS", "Android",
+    "Git", "REST API", "Firebase"
+  ],
+  "Game Developer": [
+    "Unity", "C#", "C++", "Unreal Engine", "3D Modeling", "Game Design",
+    "JavaScript", "Python", "Git", "Blender"
+  ],
+  "Blockchain Developer": [
+    "Solidity", "Ethereum", "Web3", "JavaScript", "Python", "Smart Contracts",
+    "Cryptocurrency", "DeFi", "Node.js", "React"
+  ],
+  "AI Engineer": [
+    "Python", "TensorFlow", "PyTorch", "Machine Learning", "Deep Learning",
+    "NLP", "Computer Vision", "AWS", "Docker", "MLOps"
+  ],
+  "Software Engineer": [
+    "Python", "Java", "JavaScript", "SQL", "Git", "Docker", "AWS",
+    "Data Structures", "Algorithms", "System Design"
+  ],
+  "QA Engineer": [
+    "Selenium", "Python", "Java", "Test Automation", "Manual Testing",
+    "API Testing", "Git", "Jenkins", "JIRA", "SQL"
+  ]
+}

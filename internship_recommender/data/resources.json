@@ -1,0 +1,5 @@
+{
+  "Django": {"free": ["https://djangogirls.org/en/"], "paid": ["https://www.udemy.com/course/python-django-dev-to-deployment/"]},
+  "Git": {"free": ["https://learngitbranching.js.org/"], "paid": ["https://www.pluralsight.com/courses/git-fundamentals"]},
+  "Flask": {"free": ["https://flask.palletsprojects.com/en/2.2.x/tutorial/"], "paid": ["https://www.udemy.com/course/python-and-flask-bootcamp-create-websites/"]}
+}

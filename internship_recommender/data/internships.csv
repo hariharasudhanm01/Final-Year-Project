@@ -1,0 +1,6 @@
+title,company,location,link,description
+"Python Developer Intern","Acme Tech","Bangalore","https://internshala.com/job/1","Work with Python and Flask to build REST APIs"
+"Data Analyst Intern","DataCorp","Bangalore","https://internshala.com/job/2","Analyze datasets using Python and SQL"
+"Frontend Intern","DesignX","Hyderabad","https://internshala.com/job/3","JS, React based frontend development"
+"Python Intern","StartupY","Remote","https://internshala.com/job/4","Build automation scripts and small web apps in Python"
+"Machine Learning Intern","ML Labs","Bangalore","https://internshala.com/job/5","Work on supervised learning models using scikit-learn"

@@ -1,0 +1,14 @@
+Flask
+pandas
+numpy
+pdfplumber
+python-docx
+beautifulsoup4
+requests
+scikit-learn
+spacy
+networkx
+sentence-transformers
+joblib
+duckduckgo_search
+mysql-connector-python

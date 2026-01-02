@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+{% block title %}InternMatch - AI-Powered Internship Finder{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero" id="home">
+  <div class="hero-overlay"></div>
+  <div class="hero-content" data-aos="fade-up">
+    <div class="hero-badge">
+      <i class="fas fa-bolt"></i> #1 AI Internship Platform
+    </div>
+    <h1 class="hero-title">
+      <span class="gradient-text">Find Your Dream Internship</span><br />
+      Powered by <span class="ai-highlight">Artificial Intelligence</span>
+    </h1>
+    <p class="hero-subtitle">
+      Personalized recommendations, skill gap analysis, and AI-based career paths — all in one platform.
+    </p>
+    <div class="hero-buttons">
+      <a href="/register" class="btn btn-primary btn-large">
+        <i class="fas fa-rocket"></i> Get Started
+      </a>
+      <a href="/login" class="btn btn-outline btn-large">
+        <i class="fas fa-sign-in-alt"></i> Sign In
+      </a>
+    </div>
+  </div>
+
+  <div class="floating-cards">
+    <div class="float-card" style="top: 25%; left: 5%;" data-aos="fade-right">
+      <i class="fas fa-brain"></i><span>AI Analysis</span>
+    </div>
+    <div class="float-card" style="top: 60%; right: 8%;" data-aos="fade-left">
+      <i class="fas fa-chart-line"></i><span>Smart Match</span>
+    </div>
+    <div class="float-card" style="bottom: 15%; left: 10%;" data-aos="fade-up">
+      <i class="fas fa-graduation-cap"></i><span>Upskill Faster</span>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose InternMatch -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <h2>Why Choose InternMatch?</h2>
+      <p>We combine AI precision with career insight to match you with the right opportunities.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+        <i class="fas fa-brain feature-icon"></i>
+        <h3>AI Resume Analysis</h3>
+        <p>Our smart parser identifies key skills and strengths from your resume with 99% accuracy.</p>
+      </div>
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+        <i class="fas fa-bullseye feature-icon"></i>
+        <h3>Personalized Recommendations</h3>
+        <p>We match your skillset, location, and interests to the most relevant internships available.</p>
+      </div>
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+        <i class="fas fa-route feature-icon"></i>
+        <h3>Custom Learning Paths</h3>
+        <p>Bridge your skill gaps with AI-curated learning roadmaps and project recommendations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works" id="how">
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <h2>How InternMatch Works</h2>
+      <p>Just 4 simple steps to land your dream internship</p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card" data-aos="zoom-in" data-aos-delay="100">
+        <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+        <h4>Create Profile</h4>
+        <p>Enter your details, goals, and preferences to personalize your experience.</p>
+      </div>
+      <div class="step-card" data-aos="zoom-in" data-aos-delay="200">
+        <div class="step-icon"><i class="fas fa-upload"></i></div>
+        <h4>Upload Resume</h4>
+        <p>Our AI scans and extracts skills to assess your strengths and opportunities.</p>
+      </div>
+      <div class="step-card" data-aos="zoom-in" data-aos-delay="300">
+        <div class="step-icon"><i class="fas fa-magic"></i></div>
+        <h4>Get Matches</h4>
+        <p>AI recommends internships based on your skills, goals, and experience.</p>
+      </div>
+      <div class="step-card" data-aos="zoom-in" data-aos-delay="400">
+        <div class="step-icon"><i class="fas fa-rocket"></i></div>
+        <h4>Apply & Grow</h4>
+        <p>Apply, track progress, and level up your profile through continuous learning.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <h2>What Our Users Say</h2>
+      <p>Real success stories from our growing community</p>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial" data-aos="fade-right">
+        <p>"InternMatch helped me secure a software engineering internship at Google! The AI recommendations were spot-on."</p>
+        <h5>— Sarah Chen, Software Intern @ Google</h5>
+      </div>
+      <div class="testimonial" data-aos="fade-up">
+        <p>"The skill gap insights were eye-opening. I upskilled fast and landed an internship at Microsoft!"</p>
+        <h5>— Marcus Johnson, Data Analyst Intern @ Microsoft</h5>
+      </div>
+      <div class="testimonial" data-aos="fade-left">
+        <p>"From resume upload to offer letter in 3 weeks! The AI learning path worked wonders for me."</p>
+        <h5>— Ananya Patel, PM Intern @ Amazon</h5>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="cta">
+  <div class="container" data-aos="zoom-in">
+    <h2>Start Your Journey with InternMatch</h2>
+    <p>Join 50,000+ students who’ve transformed their careers using AI.</p>
+    <a href="/register" class="btn btn-primary btn-xl">
+      <i class="fas fa-rocket"></i> Join Now
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <p>© 2025 InternMatch | Designed with ❤️ for students</p>
+    <div class="footer-links">
+      <a href="#home">Home</a>
+      <a href="#features">Features</a>
+      <a href="#how">How It Works</a>
+      <a href="#testimonials">Testimonials</a>
+
+    </div>
+  </div>
+</footer>
+
+<!-- AOS Scroll Animation -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init({ duration: 1200, once: true });</script>
+
+<style>
+/* Global */
+body {
+  font-family: "Poppins", sans-serif;
+  color: #333;
+  margin: 0;
+  background: #fff;
+  scroll-behavior: smooth;
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  color: #fff;
+  background: linear-gradient(135deg, #ff7b00, #ff5f00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+}
+.hero-badge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.hero-title {
+  font-size: 3rem;
+  line-height: 1.3;
+  font-weight: 700;
+}
+.gradient-text {
+  background: linear-gradient(90deg, #ffffff, #ffe2b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.ai-highlight { color: #ffd700; }
+.hero-buttons {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.8rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+.btn-primary {
+  background: #fff;
+  color: #ff5f00;
+}
+.btn-outline {
+  border: 2px solid #fff;
+  color: #fff;
+}
+.btn-primary:hover { background: #ffe5d0; transform: scale(1.05); }
+.btn-outline:hover { background: #fff; color: #333; }
+
+/* Floating Cards */
+.floating-cards .float-card {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 600;
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Sections */
+section { padding: 5rem 2rem; }
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.section-header h2 {
+  color: #ff5f00;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+/* Feature Cards */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+.feature-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: all 0.3s;
+}
+.feature-card:hover { transform: translateY(-8px); }
+.feature-icon {
+  font-size: 2.3rem;
+  color: #ff7b00;
+  margin-bottom: 1rem;
+}
+
+/* How It Works */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  text-align: center;
+}
+.step-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+.step-card:hover { transform: translateY(-8px); }
+.step-icon {
+  background: linear-gradient(135deg, #ff7b00, #ff9500);
+  color: #fff;
+  font-size: 2rem;
+  padding: 1rem;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+/* Testimonials */
+.testimonials {
+  background: #fffaf4;
+  text-align: center;
+}
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+.testimonial {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+/* CTA */
+.cta {
+  text-align: center;
+  background: linear-gradient(135deg, #ff7b00, #ff5f00);
+  color: #fff;
+  padding: 4rem 2rem;
+  border-radius: 16px;
+  margin: 4rem auto;
+  max-width: 900px;
+}
+.btn-xl {
+  padding: 1rem 2.2rem;
+  border-radius: 40px;
+  font-size: 1.1rem;
+  background: #fff;
+  color: #ff5f00;
+  font-weight: 600;
+}
+.btn-xl:hover { background: #ffe2c2; }
+
+/* Footer */
+footer {
+  background: #111;
+  color: #bbb;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.footer-links { margin-top: 0.5rem; }
+.footer-links a {
+  color: #ff7b00;
+  margin: 0 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.footer-links a:hover { text-decoration: underline; }
+</style>
+{% endblock %}

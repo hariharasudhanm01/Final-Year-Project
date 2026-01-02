@@ -1,0 +1,20 @@
+# Database
+*.db
+
+# Uploads / runtime files
+uploads/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+.venv/
+
+# Environment variables
+.env
+
+# OS junk
+.DS_Store
+Thumbs.db

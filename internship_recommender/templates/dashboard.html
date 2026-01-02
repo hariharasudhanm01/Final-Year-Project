@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - InternMatch{% endblock %}
+
+{% block content %}
+<div class="with-sidebar">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <nav>
+      <ul>
+        <li><a href="/dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="/profile"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="/upload"><i class="fas fa-upload"></i> Upload Resume</a></li>
+        <li><a href="/apply"><i class="fas fa-file-alt"></i> Application Form</a></li>
+        <li><a href="/dashboard"><i class="fas fa-briefcase"></i> Recommended Internships</a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="top-nav">
+      <h1>InternMatch</h1>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="user-avatar">
+          {{ (user.full_name or user.username)[0]|upper if user else 'U' }}
+        </div>
+
+      </div>
+    </div>
+    
+
+    <div class="content">
+      <h1>Welcome, {{ user.full_name or user.username }}!</h1>
+
+      <div class="grid">
+        <!-- Profile card -->
+        <div class="card">
+          <h3><i class="fas fa-user-circle"></i> Profile Summary</h3>
+          {% if profile %}
+            <p><strong>Degree:</strong> {{ profile.degree or 'Not specified' }}</p>
+            <p><strong>Study Year:</strong> {{ profile.study_year or 'Not specified' }}</p>
+            <p><strong>Sector:</strong> {{ profile.sector or 'Not specified' }}</p>
+            <p><strong>Stream:</strong> {{ profile.stream or 'Not specified' }}</p>
+            {% if profile.skills %}
+              <p><strong>Skills:</strong></p>
+              <div style="display: flex; flex-wrap: wrap;">
+ 
+    {% for skill in profile.skills.split(',') %}
+      {{ skill.strip() }}{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  </p>
+
+              </div>
+            {% endif %}
+          {% else %}
+            <p>Complete your profile to get personalized recommendations!</p>
+          {% endif %}
+          <a href="/profile" class="btn btn-secondary" style="margin-top: 1rem;">Edit Profile</a>
+        </div>
+
+        <!-- Quick Actions card -->
+        <div class="card">
+          <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <a href="/upload" class="btn">Upload Resume & Get Recommendations</a>
+            <a href="/apply" class="btn">Fill Application Form</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="card">
+        <h3><i class="fas fa-history"></i> Recent Recommendations</h3>
+        {% if history %}
+          {% for rec in history %}
+            <div style="border-left: 3px solid var(--primary); padding-left: 1rem; margin: 1rem 0; background: var(--accent); border-radius: var(--border-radius);">
+              <p><strong>{{ rec.role }}</strong> in {{ rec.location or 'Any location' }}</p>
+              <p><small>Salary: ₹{{ rec.salary_range_low }} - ₹{{ rec.salary_range_high }} | {{ rec.created_at }}</small></p>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>No recommendations yet. Get started by uploading your resume or filling the application form!</p>
+        {% endif %}
+      </div>
+
+
+    </div>
+  </div>
+</div>
+{% endblock %}

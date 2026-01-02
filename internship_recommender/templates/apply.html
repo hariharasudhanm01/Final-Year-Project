@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Application Form - InternMatch{% endblock %}
+
+{% block content %}
+<div class="with-sidebar">
+  <div class="top-nav">
+    <h1>InternMatch</h1>
+    <div class="user-avatar">
+      {{ (user.full_name or user.username)[0]|upper if user else 'U' }}
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <nav>
+      <ul>
+        <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="/profile"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="/upload"><i class="fas fa-upload"></i> Upload Resume</a></li>
+        <li><a href="/apply" class="active"><i class="fas fa-file-alt"></i> Application Form</a></li>
+        <li><a href="/dashboard"><i class="fas fa-briefcase"></i> Recommended Internships</a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="content">
+      <h1><i class="fas fa-clipboard-list"></i> Internship Application Form</h1>
+
+      <div class="card">
+        <p>Fill out this form to get personalized internship recommendations based on your profile and skills.</p>
+
+        <form action="/apply" method="post">
+          <div class="card" style="margin-bottom: 2rem;">
+            <h3><i class="fas fa-user"></i> Personal Information</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label for="full_name">Full Name *</label>
+                <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required />
+              </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label for="degree">Degree *</label>
+                <select id="degree" name="degree" required>
+                  <option value="">Select your degree</option>
+                  <option>B.E / B.Tech</option>
+                  <option>B.Sc / BCA</option>
+                  <option>M.E / M.Tech</option>
+                  <option>M.Sc / MCA</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="year">Current Study Year *</label>
+                <select id="year" name="year" required>
+                  <option value="">Select your current study year</option>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>Graduate</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom: 2rem;">
+            <h3><i class="fas fa-tools"></i> Skills (Select multiple)</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
+              {% set SKILL_OPTIONS = [
+                'JavaScript','Python','Java','React','Node.js','HTML/CSS','Data Analysis','Machine Learning','Digital Marketing','Graphic Design','Project Management','Communication','Leadership','Problem Solving','Team Collaboration','Time Management','Research'
+              ] %}
+              {% for s in SKILL_OPTIONS %}
+                <label style="display: flex; align-items: center; padding: 0.5rem; border: 1px solid #ddd; border-radius: var(--border-radius); cursor: pointer; transition: var(--transition);">
+                  <input type="checkbox" name="skills" value="{{ s }}" style="margin-right: 0.5rem;" />
+                  {{ s }}
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom: 2rem;">
+            <h3><i class="fas fa-briefcase"></i> Career Preferences</h3>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label for="sector">Preferred Sector *</label>
+                <select id="sector" name="sector" required>
+                  <option value="">Select preferred sector</option>
+                  <option>Software</option>
+                  <option>Data / AI</option>
+                  <option>Design</option>
+                  <option>Marketing</option>
+                  <option>Operations</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="stream">Stream *</label>
+                <select id="stream" name="stream" required>
+                  <option value="">Select your stream</option>
+                  <option>CSE / IT</option>
+                  <option>ECE / EEE</option>
+                  <option>Mechanical</option>
+                  <option>Civil</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label for="role">Desired Role *</label>
+                <input type="text" id="role" name="role" placeholder="e.g., Software Engineer" required />
+              </div>
+              <div class="form-group">
+                <label for="location">Preferred Location</label>
+                <input type="text" id="location" name="location" placeholder="e.g., Bangalore or Remote" />
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: center;">
+            <button type="submit" class="btn" style="padding: 1rem 2rem; font-size: 1.1rem;">Submit Application</button>
+          </div>
+        </form>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

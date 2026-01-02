@@ -1,0 +1,445 @@
+experience,salary,company_size,source,skills_count,location_factor,company_size_numeric,role
+0,300000,startup,,5,0.8,1.0,python developer
+1,450000,startup,,5,0.8,1.0,python developer
+2,600000,mid,,5,0.8,2.0,python developer
+3,800000,mid,,5,0.8,2.0,python developer
+5,1200000,large,,5,0.8,3.0,python developer
+0,350000,,payscale,5,0.8,2.0,python developer
+1,409500,,payscale,5,0.8,2.0,python developer
+2,483000,,payscale,5,0.8,2.0,python developer
+3,570500,,payscale,5,0.8,2.0,python developer
+4,672000,,payscale,5,0.8,2.0,python developer
+5,787500,,payscale,5,0.8,2.0,python developer
+6,917000,,payscale,5,0.8,2.0,python developer
+7,1060500,,payscale,5,0.8,2.0,python developer
+0,320000,startup,indeed,5,0.8,1.0,python developer
+0,400000,mid,indeed,5,0.8,2.0,python developer
+0,520000,large,indeed,5,0.8,3.0,python developer
+0,720000,faang,indeed,5,0.8,4.0,python developer
+1,384000,startup,indeed,5,0.8,1.0,python developer
+1,480000,mid,indeed,5,0.8,2.0,python developer
+1,624000,large,indeed,5,0.8,3.0,python developer
+1,864000,faang,indeed,5,0.8,4.0,python developer
+2,448000,startup,indeed,5,0.8,1.0,python developer
+2,560000,mid,indeed,5,0.8,2.0,python developer
+2,728000,large,indeed,5,0.8,3.0,python developer
+2,1008000,faang,indeed,5,0.8,4.0,python developer
+3,512000,startup,indeed,5,0.8,1.0,python developer
+3,640000,mid,indeed,5,0.8,2.0,python developer
+3,832000,large,indeed,5,0.8,3.0,python developer
+3,1152000,faang,indeed,5,0.8,4.0,python developer
+4,576000,startup,indeed,5,0.8,1.0,python developer
+4,720000,mid,indeed,5,0.8,2.0,python developer
+4,936000,large,indeed,5,0.8,3.0,python developer
+4,1296000,faang,indeed,5,0.8,4.0,python developer
+5,640000,startup,indeed,5,0.8,1.0,python developer
+5,800000,mid,indeed,5,0.8,2.0,python developer
+5,1040000,large,indeed,5,0.8,3.0,python developer
+5,1440000,faang,indeed,5,0.8,4.0,python developer
+0,400000,startup,,5,0.8,1.0,data scientist
+1,600000,startup,,5,0.8,1.0,data scientist
+2,800000,mid,,5,0.8,2.0,data scientist
+3,1100000,mid,,5,0.8,2.0,data scientist
+5,1500000,large,,5,0.8,3.0,data scientist
+0,450000,,payscale,5,0.8,2.0,data scientist
+1,526500,,payscale,5,0.8,2.0,data scientist
+2,621000,,payscale,5,0.8,2.0,data scientist
+3,733500,,payscale,5,0.8,2.0,data scientist
+4,864000,,payscale,5,0.8,2.0,data scientist
+5,1012500,,payscale,5,0.8,2.0,data scientist
+6,1179000,,payscale,5,0.8,2.0,data scientist
+7,1363500,,payscale,5,0.8,2.0,data scientist
+0,400000,startup,indeed,5,0.8,1.0,data scientist
+0,500000,mid,indeed,5,0.8,2.0,data scientist
+0,650000,large,indeed,5,0.8,3.0,data scientist
+0,900000,faang,indeed,5,0.8,4.0,data scientist
+1,480000,startup,indeed,5,0.8,1.0,data scientist
+1,600000,mid,indeed,5,0.8,2.0,data scientist
+1,780000,large,indeed,5,0.8,3.0,data scientist
+1,1080000,faang,indeed,5,0.8,4.0,data scientist
+2,560000,startup,indeed,5,0.8,1.0,data scientist
+2,700000,mid,indeed,5,0.8,2.0,data scientist
+2,910000,large,indeed,5,0.8,3.0,data scientist
+2,1260000,faang,indeed,5,0.8,4.0,data scientist
+3,640000,startup,indeed,5,0.8,1.0,data scientist
+3,800000,mid,indeed,5,0.8,2.0,data scientist
+3,1040000,large,indeed,5,0.8,3.0,data scientist
+3,1440000,faang,indeed,5,0.8,4.0,data scientist
+4,720000,startup,indeed,5,0.8,1.0,data scientist
+4,900000,mid,indeed,5,0.8,2.0,data scientist
+4,1170000,large,indeed,5,0.8,3.0,data scientist
+4,1620000,faang,indeed,5,0.8,4.0,data scientist
+5,800000,startup,indeed,5,0.8,1.0,data scientist
+5,1000000,mid,indeed,5,0.8,2.0,data scientist
+5,1300000,large,indeed,5,0.8,3.0,data scientist
+5,1800000,faang,indeed,5,0.8,4.0,data scientist
+0,250000,startup,,5,0.8,1.0,frontend developer
+1,400000,startup,,5,0.8,1.0,frontend developer
+2,550000,mid,,5,0.8,2.0,frontend developer
+3,700000,mid,,5,0.8,2.0,frontend developer
+5,1000000,large,,5,0.8,3.0,frontend developer
+0,300000,,payscale,5,0.8,2.0,frontend developer
+1,351000,,payscale,5,0.8,2.0,frontend developer
+2,414000,,payscale,5,0.8,2.0,frontend developer
+3,488999,,payscale,5,0.8,2.0,frontend developer
+4,576000,,payscale,5,0.8,2.0,frontend developer
+5,675000,,payscale,5,0.8,2.0,frontend developer
+6,786000,,payscale,5,0.8,2.0,frontend developer
+7,908999,,payscale,5,0.8,2.0,frontend developer
+0,280000,startup,indeed,5,0.8,1.0,frontend developer
+0,350000,mid,indeed,5,0.8,2.0,frontend developer
+0,455000,large,indeed,5,0.8,3.0,frontend developer
+0,630000,faang,indeed,5,0.8,4.0,frontend developer
+1,336000,startup,indeed,5,0.8,1.0,frontend developer
+1,420000,mid,indeed,5,0.8,2.0,frontend developer
+1,546000,large,indeed,5,0.8,3.0,frontend developer
+1,756000,faang,indeed,5,0.8,4.0,frontend developer
+2,392000,startup,indeed,5,0.8,1.0,frontend developer
+2,489999,mid,indeed,5,0.8,2.0,frontend developer
+2,637000,large,indeed,5,0.8,3.0,frontend developer
+2,881999,faang,indeed,5,0.8,4.0,frontend developer
+3,448000,startup,indeed,5,0.8,1.0,frontend developer
+3,560000,mid,indeed,5,0.8,2.0,frontend developer
+3,728000,large,indeed,5,0.8,3.0,frontend developer
+3,1008000,faang,indeed,5,0.8,4.0,frontend developer
+4,504000,startup,indeed,5,0.8,1.0,frontend developer
+4,630000,mid,indeed,5,0.8,2.0,frontend developer
+4,819000,large,indeed,5,0.8,3.0,frontend developer
+4,1134000,faang,indeed,5,0.8,4.0,frontend developer
+5,560000,startup,indeed,5,0.8,1.0,frontend developer
+5,700000,mid,indeed,5,0.8,2.0,frontend developer
+5,910000,large,indeed,5,0.8,3.0,frontend developer
+5,1260000,faang,indeed,5,0.8,4.0,frontend developer
+0,350000,startup,,5,0.8,1.0,software engineer
+1,500000,startup,,5,0.8,1.0,software engineer
+2,700000,mid,,5,0.8,2.0,software engineer
+3,900000,mid,,5,0.8,2.0,software engineer
+5,1300000,large,,5,0.8,3.0,software engineer
+0,400000,,payscale,5,0.8,2.0,software engineer
+1,468000,,payscale,5,0.8,2.0,software engineer
+2,552000,,payscale,5,0.8,2.0,software engineer
+3,652000,,payscale,5,0.8,2.0,software engineer
+4,768000,,payscale,5,0.8,2.0,software engineer
+5,900000,,payscale,5,0.8,2.0,software engineer
+6,1048000,,payscale,5,0.8,2.0,software engineer
+7,1212000,,payscale,5,0.8,2.0,software engineer
+0,360000,startup,indeed,5,0.8,1.0,software engineer
+0,450000,mid,indeed,5,0.8,2.0,software engineer
+0,585000,large,indeed,5,0.8,3.0,software engineer
+0,810000,faang,indeed,5,0.8,4.0,software engineer
+1,432000,startup,indeed,5,0.8,1.0,software engineer
+1,540000,mid,indeed,5,0.8,2.0,software engineer
+1,702000,large,indeed,5,0.8,3.0,software engineer
+1,972000,faang,indeed,5,0.8,4.0,software engineer
+2,504000,startup,indeed,5,0.8,1.0,software engineer
+2,630000,mid,indeed,5,0.8,2.0,software engineer
+2,819000,large,indeed,5,0.8,3.0,software engineer
+2,1134000,faang,indeed,5,0.8,4.0,software engineer
+3,576000,startup,indeed,5,0.8,1.0,software engineer
+3,720000,mid,indeed,5,0.8,2.0,software engineer
+3,936000,large,indeed,5,0.8,3.0,software engineer
+3,1296000,faang,indeed,5,0.8,4.0,software engineer
+4,648000,startup,indeed,5,0.8,1.0,software engineer
+4,810000,mid,indeed,5,0.8,2.0,software engineer
+4,1053000,large,indeed,5,0.8,3.0,software engineer
+4,1458000,faang,indeed,5,0.8,4.0,software engineer
+5,720000,startup,indeed,5,0.8,1.0,software engineer
+5,900000,mid,indeed,5,0.8,2.0,software engineer
+5,1170000,large,indeed,5,0.8,3.0,software engineer
+5,1620000,faang,indeed,5,0.8,4.0,software engineer
+0,300000,startup,,5,0.8,1.0,data analyst
+1,450000,startup,,5,0.8,1.0,data analyst
+2,600000,mid,,5,0.8,2.0,data analyst
+3,750000,mid,,5,0.8,2.0,data analyst
+5,1000000,large,,5,0.8,3.0,data analyst
+0,350000,,payscale,5,0.8,2.0,data analyst
+1,409500,,payscale,5,0.8,2.0,data analyst
+2,483000,,payscale,5,0.8,2.0,data analyst
+3,570500,,payscale,5,0.8,2.0,data analyst
+4,672000,,payscale,5,0.8,2.0,data analyst
+5,787500,,payscale,5,0.8,2.0,data analyst
+6,917000,,payscale,5,0.8,2.0,data analyst
+7,1060500,,payscale,5,0.8,2.0,data analyst
+0,320000,startup,indeed,5,0.8,1.0,data analyst
+0,400000,mid,indeed,5,0.8,2.0,data analyst
+0,520000,large,indeed,5,0.8,3.0,data analyst
+0,720000,faang,indeed,5,0.8,4.0,data analyst
+1,384000,startup,indeed,5,0.8,1.0,data analyst
+1,480000,mid,indeed,5,0.8,2.0,data analyst
+1,624000,large,indeed,5,0.8,3.0,data analyst
+1,864000,faang,indeed,5,0.8,4.0,data analyst
+2,448000,startup,indeed,5,0.8,1.0,data analyst
+2,560000,mid,indeed,5,0.8,2.0,data analyst
+2,728000,large,indeed,5,0.8,3.0,data analyst
+2,1008000,faang,indeed,5,0.8,4.0,data analyst
+3,512000,startup,indeed,5,0.8,1.0,data analyst
+3,640000,mid,indeed,5,0.8,2.0,data analyst
+3,832000,large,indeed,5,0.8,3.0,data analyst
+3,1152000,faang,indeed,5,0.8,4.0,data analyst
+4,576000,startup,indeed,5,0.8,1.0,data analyst
+4,720000,mid,indeed,5,0.8,2.0,data analyst
+4,936000,large,indeed,5,0.8,3.0,data analyst
+4,1296000,faang,indeed,5,0.8,4.0,data analyst
+5,640000,startup,indeed,5,0.8,1.0,data analyst
+5,800000,mid,indeed,5,0.8,2.0,data analyst
+5,1040000,large,indeed,5,0.8,3.0,data analyst
+5,1440000,faang,indeed,5,0.8,4.0,data analyst
+0,250000,startup,,6,0.8,1.0,ui ux designer
+1,400000,startup,,6,0.8,1.0,ui ux designer
+2,550000,mid,,6,0.8,2.0,ui ux designer
+3,700000,mid,,6,0.8,2.0,ui ux designer
+5,950000,large,,6,0.8,3.0,ui ux designer
+0,300000,,payscale,6,0.8,2.0,ui ux designer
+1,351000,,payscale,6,0.8,2.0,ui ux designer
+2,414000,,payscale,6,0.8,2.0,ui ux designer
+3,488999,,payscale,6,0.8,2.0,ui ux designer
+4,576000,,payscale,6,0.8,2.0,ui ux designer
+5,675000,,payscale,6,0.8,2.0,ui ux designer
+6,786000,,payscale,6,0.8,2.0,ui ux designer
+7,908999,,payscale,6,0.8,2.0,ui ux designer
+0,280000,startup,indeed,6,0.8,1.0,ui ux designer
+0,350000,mid,indeed,6,0.8,2.0,ui ux designer
+0,455000,large,indeed,6,0.8,3.0,ui ux designer
+0,630000,faang,indeed,6,0.8,4.0,ui ux designer
+1,336000,startup,indeed,6,0.8,1.0,ui ux designer
+1,420000,mid,indeed,6,0.8,2.0,ui ux designer
+1,546000,large,indeed,6,0.8,3.0,ui ux designer
+1,756000,faang,indeed,6,0.8,4.0,ui ux designer
+2,392000,startup,indeed,6,0.8,1.0,ui ux designer
+2,489999,mid,indeed,6,0.8,2.0,ui ux designer
+2,637000,large,indeed,6,0.8,3.0,ui ux designer
+2,881999,faang,indeed,6,0.8,4.0,ui ux designer
+3,448000,startup,indeed,6,0.8,1.0,ui ux designer
+3,560000,mid,indeed,6,0.8,2.0,ui ux designer
+3,728000,large,indeed,6,0.8,3.0,ui ux designer
+3,1008000,faang,indeed,6,0.8,4.0,ui ux designer
+4,504000,startup,indeed,6,0.8,1.0,ui ux designer
+4,630000,mid,indeed,6,0.8,2.0,ui ux designer
+4,819000,large,indeed,6,0.8,3.0,ui ux designer
+4,1134000,faang,indeed,6,0.8,4.0,ui ux designer
+5,560000,startup,indeed,6,0.8,1.0,ui ux designer
+5,700000,mid,indeed,6,0.8,2.0,ui ux designer
+5,910000,large,indeed,6,0.8,3.0,ui ux designer
+5,1260000,faang,indeed,6,0.8,4.0,ui ux designer
+0,400000,startup,,5,0.8,1.0,devops engineer
+1,600000,startup,,5,0.8,1.0,devops engineer
+2,800000,mid,,5,0.8,2.0,devops engineer
+3,1000000,mid,,5,0.8,2.0,devops engineer
+5,1400000,large,,5,0.8,3.0,devops engineer
+0,450000,,payscale,5,0.8,2.0,devops engineer
+1,526500,,payscale,5,0.8,2.0,devops engineer
+2,621000,,payscale,5,0.8,2.0,devops engineer
+3,733500,,payscale,5,0.8,2.0,devops engineer
+4,864000,,payscale,5,0.8,2.0,devops engineer
+5,1012500,,payscale,5,0.8,2.0,devops engineer
+6,1179000,,payscale,5,0.8,2.0,devops engineer
+7,1363500,,payscale,5,0.8,2.0,devops engineer
+0,400000,startup,indeed,5,0.8,1.0,devops engineer
+0,500000,mid,indeed,5,0.8,2.0,devops engineer
+0,650000,large,indeed,5,0.8,3.0,devops engineer
+0,900000,faang,indeed,5,0.8,4.0,devops engineer
+1,480000,startup,indeed,5,0.8,1.0,devops engineer
+1,600000,mid,indeed,5,0.8,2.0,devops engineer
+1,780000,large,indeed,5,0.8,3.0,devops engineer
+1,1080000,faang,indeed,5,0.8,4.0,devops engineer
+2,560000,startup,indeed,5,0.8,1.0,devops engineer
+2,700000,mid,indeed,5,0.8,2.0,devops engineer
+2,910000,large,indeed,5,0.8,3.0,devops engineer
+2,1260000,faang,indeed,5,0.8,4.0,devops engineer
+3,640000,startup,indeed,5,0.8,1.0,devops engineer
+3,800000,mid,indeed,5,0.8,2.0,devops engineer
+3,1040000,large,indeed,5,0.8,3.0,devops engineer
+3,1440000,faang,indeed,5,0.8,4.0,devops engineer
+4,720000,startup,indeed,5,0.8,1.0,devops engineer
+4,900000,mid,indeed,5,0.8,2.0,devops engineer
+4,1170000,large,indeed,5,0.8,3.0,devops engineer
+4,1620000,faang,indeed,5,0.8,4.0,devops engineer
+5,800000,startup,indeed,5,0.8,1.0,devops engineer
+5,1000000,mid,indeed,5,0.8,2.0,devops engineer
+5,1300000,large,indeed,5,0.8,3.0,devops engineer
+5,1800000,faang,indeed,5,0.8,4.0,devops engineer
+0,500000,startup,,6,0.8,1.0,machine learning engineer
+1,700000,startup,,6,0.8,1.0,machine learning engineer
+2,900000,mid,,6,0.8,2.0,machine learning engineer
+3,1200000,mid,,6,0.8,2.0,machine learning engineer
+5,1600000,large,,6,0.8,3.0,machine learning engineer
+0,500000,,payscale,6,0.8,2.0,machine learning engineer
+1,585000,,payscale,6,0.8,2.0,machine learning engineer
+2,690000,,payscale,6,0.8,2.0,machine learning engineer
+3,815000,,payscale,6,0.8,2.0,machine learning engineer
+4,960000,,payscale,6,0.8,2.0,machine learning engineer
+5,1125000,,payscale,6,0.8,2.0,machine learning engineer
+6,1310000,,payscale,6,0.8,2.0,machine learning engineer
+7,1515000,,payscale,6,0.8,2.0,machine learning engineer
+0,440000,startup,indeed,6,0.8,1.0,machine learning engineer
+0,550000,mid,indeed,6,0.8,2.0,machine learning engineer
+0,715000,large,indeed,6,0.8,3.0,machine learning engineer
+0,990000,faang,indeed,6,0.8,4.0,machine learning engineer
+1,528000,startup,indeed,6,0.8,1.0,machine learning engineer
+1,660000,mid,indeed,6,0.8,2.0,machine learning engineer
+1,858000,large,indeed,6,0.8,3.0,machine learning engineer
+1,1188000,faang,indeed,6,0.8,4.0,machine learning engineer
+2,616000,startup,indeed,6,0.8,1.0,machine learning engineer
+2,770000,mid,indeed,6,0.8,2.0,machine learning engineer
+2,1001000,large,indeed,6,0.8,3.0,machine learning engineer
+2,1386000,faang,indeed,6,0.8,4.0,machine learning engineer
+3,704000,startup,indeed,6,0.8,1.0,machine learning engineer
+3,880000,mid,indeed,6,0.8,2.0,machine learning engineer
+3,1144000,large,indeed,6,0.8,3.0,machine learning engineer
+3,1584000,faang,indeed,6,0.8,4.0,machine learning engineer
+4,792000,startup,indeed,6,0.8,1.0,machine learning engineer
+4,990000,mid,indeed,6,0.8,2.0,machine learning engineer
+4,1287000,large,indeed,6,0.8,3.0,machine learning engineer
+4,1782000,faang,indeed,6,0.8,4.0,machine learning engineer
+5,880000,startup,indeed,6,0.8,1.0,machine learning engineer
+5,1100000,mid,indeed,6,0.8,2.0,machine learning engineer
+5,1430000,large,indeed,6,0.8,3.0,machine learning engineer
+5,1980000,faang,indeed,6,0.8,4.0,machine learning engineer
+0,300000,startup,,5,0.8,1.0,backend developer
+1,450000,startup,,5,0.8,1.0,backend developer
+2,600000,mid,,5,0.8,2.0,backend developer
+3,800000,mid,,5,0.8,2.0,backend developer
+5,1100000,large,,5,0.8,3.0,backend developer
+0,350000,,payscale,5,0.8,2.0,backend developer
+1,409500,,payscale,5,0.8,2.0,backend developer
+2,483000,,payscale,5,0.8,2.0,backend developer
+3,570500,,payscale,5,0.8,2.0,backend developer
+4,672000,,payscale,5,0.8,2.0,backend developer
+5,787500,,payscale,5,0.8,2.0,backend developer
+6,917000,,payscale,5,0.8,2.0,backend developer
+7,1060500,,payscale,5,0.8,2.0,backend developer
+0,320000,startup,indeed,5,0.8,1.0,backend developer
+0,400000,mid,indeed,5,0.8,2.0,backend developer
+0,520000,large,indeed,5,0.8,3.0,backend developer
+0,720000,faang,indeed,5,0.8,4.0,backend developer
+1,384000,startup,indeed,5,0.8,1.0,backend developer
+1,480000,mid,indeed,5,0.8,2.0,backend developer
+1,624000,large,indeed,5,0.8,3.0,backend developer
+1,864000,faang,indeed,5,0.8,4.0,backend developer
+2,448000,startup,indeed,5,0.8,1.0,backend developer
+2,560000,mid,indeed,5,0.8,2.0,backend developer
+2,728000,large,indeed,5,0.8,3.0,backend developer
+2,1008000,faang,indeed,5,0.8,4.0,backend developer
+3,512000,startup,indeed,5,0.8,1.0,backend developer
+3,640000,mid,indeed,5,0.8,2.0,backend developer
+3,832000,large,indeed,5,0.8,3.0,backend developer
+3,1152000,faang,indeed,5,0.8,4.0,backend developer
+4,576000,startup,indeed,5,0.8,1.0,backend developer
+4,720000,mid,indeed,5,0.8,2.0,backend developer
+4,936000,large,indeed,5,0.8,3.0,backend developer
+4,1296000,faang,indeed,5,0.8,4.0,backend developer
+5,640000,startup,indeed,5,0.8,1.0,backend developer
+5,800000,mid,indeed,5,0.8,2.0,backend developer
+5,1040000,large,indeed,5,0.8,3.0,backend developer
+5,1440000,faang,indeed,5,0.8,4.0,backend developer
+0,300000,startup,,6,0.8,1.0,full stack developer
+1,450000,startup,,6,0.8,1.0,full stack developer
+2,600000,mid,,6,0.8,2.0,full stack developer
+3,800000,mid,,6,0.8,2.0,full stack developer
+5,1100000,large,,6,0.8,3.0,full stack developer
+0,350000,,payscale,6,0.8,2.0,full stack developer
+1,409500,,payscale,6,0.8,2.0,full stack developer
+2,483000,,payscale,6,0.8,2.0,full stack developer
+3,570500,,payscale,6,0.8,2.0,full stack developer
+4,672000,,payscale,6,0.8,2.0,full stack developer
+5,787500,,payscale,6,0.8,2.0,full stack developer
+6,917000,,payscale,6,0.8,2.0,full stack developer
+7,1060500,,payscale,6,0.8,2.0,full stack developer
+0,320000,startup,indeed,6,0.8,1.0,full stack developer
+0,400000,mid,indeed,6,0.8,2.0,full stack developer
+0,520000,large,indeed,6,0.8,3.0,full stack developer
+0,720000,faang,indeed,6,0.8,4.0,full stack developer
+1,384000,startup,indeed,6,0.8,1.0,full stack developer
+1,480000,mid,indeed,6,0.8,2.0,full stack developer
+1,624000,large,indeed,6,0.8,3.0,full stack developer
+1,864000,faang,indeed,6,0.8,4.0,full stack developer
+2,448000,startup,indeed,6,0.8,1.0,full stack developer
+2,560000,mid,indeed,6,0.8,2.0,full stack developer
+2,728000,large,indeed,6,0.8,3.0,full stack developer
+2,1008000,faang,indeed,6,0.8,4.0,full stack developer
+3,512000,startup,indeed,6,0.8,1.0,full stack developer
+3,640000,mid,indeed,6,0.8,2.0,full stack developer
+3,832000,large,indeed,6,0.8,3.0,full stack developer
+3,1152000,faang,indeed,6,0.8,4.0,full stack developer
+4,576000,startup,indeed,6,0.8,1.0,full stack developer
+4,720000,mid,indeed,6,0.8,2.0,full stack developer
+4,936000,large,indeed,6,0.8,3.0,full stack developer
+4,1296000,faang,indeed,6,0.8,4.0,full stack developer
+5,640000,startup,indeed,6,0.8,1.0,full stack developer
+5,800000,mid,indeed,6,0.8,2.0,full stack developer
+5,1040000,large,indeed,6,0.8,3.0,full stack developer
+5,1440000,faang,indeed,6,0.8,4.0,full stack developer
+0,300000,startup,,6,0.8,1.0,mobile app developer
+1,450000,startup,,6,0.8,1.0,mobile app developer
+2,600000,mid,,6,0.8,2.0,mobile app developer
+3,800000,mid,,6,0.8,2.0,mobile app developer
+5,1100000,large,,6,0.8,3.0,mobile app developer
+0,350000,,payscale,6,0.8,2.0,mobile app developer
+1,409500,,payscale,6,0.8,2.0,mobile app developer
+2,483000,,payscale,6,0.8,2.0,mobile app developer
+3,570500,,payscale,6,0.8,2.0,mobile app developer
+4,672000,,payscale,6,0.8,2.0,mobile app developer
+5,787500,,payscale,6,0.8,2.0,mobile app developer
+6,917000,,payscale,6,0.8,2.0,mobile app developer
+7,1060500,,payscale,6,0.8,2.0,mobile app developer
+0,320000,startup,indeed,6,0.8,1.0,mobile app developer
+0,400000,mid,indeed,6,0.8,2.0,mobile app developer
+0,520000,large,indeed,6,0.8,3.0,mobile app developer
+0,720000,faang,indeed,6,0.8,4.0,mobile app developer
+1,384000,startup,indeed,6,0.8,1.0,mobile app developer
+1,480000,mid,indeed,6,0.8,2.0,mobile app developer
+1,624000,large,indeed,6,0.8,3.0,mobile app developer
+1,864000,faang,indeed,6,0.8,4.0,mobile app developer
+2,448000,startup,indeed,6,0.8,1.0,mobile app developer
+2,560000,mid,indeed,6,0.8,2.0,mobile app developer
+2,728000,large,indeed,6,0.8,3.0,mobile app developer
+2,1008000,faang,indeed,6,0.8,4.0,mobile app developer
+3,512000,startup,indeed,6,0.8,1.0,mobile app developer
+3,640000,mid,indeed,6,0.8,2.0,mobile app developer
+3,832000,large,indeed,6,0.8,3.0,mobile app developer
+3,1152000,faang,indeed,6,0.8,4.0,mobile app developer
+4,576000,startup,indeed,6,0.8,1.0,mobile app developer
+4,720000,mid,indeed,6,0.8,2.0,mobile app developer
+4,936000,large,indeed,6,0.8,3.0,mobile app developer
+4,1296000,faang,indeed,6,0.8,4.0,mobile app developer
+5,640000,startup,indeed,6,0.8,1.0,mobile app developer
+5,800000,mid,indeed,6,0.8,2.0,mobile app developer
+5,1040000,large,indeed,6,0.8,3.0,mobile app developer
+5,1440000,faang,indeed,6,0.8,4.0,mobile app developer
+0,300000,startup,,5,0.8,1.0,qa engineer
+1,450000,startup,,5,0.8,1.0,qa engineer
+2,600000,mid,,5,0.8,2.0,qa engineer
+3,800000,mid,,5,0.8,2.0,qa engineer
+5,1100000,large,,5,0.8,3.0,qa engineer
+0,350000,,payscale,5,0.8,2.0,qa engineer
+1,409500,,payscale,5,0.8,2.0,qa engineer
+2,483000,,payscale,5,0.8,2.0,qa engineer
+3,570500,,payscale,5,0.8,2.0,qa engineer
+4,672000,,payscale,5,0.8,2.0,qa engineer
+5,787500,,payscale,5,0.8,2.0,qa engineer
+6,917000,,payscale,5,0.8,2.0,qa engineer
+7,1060500,,payscale,5,0.8,2.0,qa engineer
+0,320000,startup,indeed,5,0.8,1.0,qa engineer
+0,400000,mid,indeed,5,0.8,2.0,qa engineer
+0,520000,large,indeed,5,0.8,3.0,qa engineer
+0,720000,faang,indeed,5,0.8,4.0,qa engineer
+1,384000,startup,indeed,5,0.8,1.0,qa engineer
+1,480000,mid,indeed,5,0.8,2.0,qa engineer
+1,624000,large,indeed,5,0.8,3.0,qa engineer
+1,864000,faang,indeed,5,0.8,4.0,qa engineer
+2,448000,startup,indeed,5,0.8,1.0,qa engineer
+2,560000,mid,indeed,5,0.8,2.0,qa engineer
+2,728000,large,indeed,5,0.8,3.0,qa engineer
+2,1008000,faang,indeed,5,0.8,4.0,qa engineer
+3,512000,startup,indeed,5,0.8,1.0,qa engineer
+3,640000,mid,indeed,5,0.8,2.0,qa engineer
+3,832000,large,indeed,5,0.8,3.0,qa engineer
+3,1152000,faang,indeed,5,0.8,4.0,qa engineer
+4,576000,startup,indeed,5,0.8,1.0,qa engineer
+4,720000,mid,indeed,5,0.8,2.0,qa engineer
+4,936000,large,indeed,5,0.8,3.0,qa engineer
+4,1296000,faang,indeed,5,0.8,4.0,qa engineer
+5,640000,startup,indeed,5,0.8,1.0,qa engineer
+5,800000,mid,indeed,5,0.8,2.0,qa engineer
+5,1040000,large,indeed,5,0.8,3.0,qa engineer
+5,1440000,faang,indeed,5,0.8,4.0,qa engineer

@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Recommended Internships - InternMatch{% endblock %}
+
+{% block content %}
+<div class="with-sidebar">
+  <div class="top-nav">
+    <h1>InternMatch</h1>
+    <div class="user-avatar">
+      {{ (user.full_name or user.username)[0]|upper if user else 'U' }}
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <nav>
+      <ul>
+        <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="/profile"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="/upload"><i class="fas fa-upload"></i> Upload Resume</a></li>
+        <li><a href="/apply"><i class="fas fa-file-alt"></i> Application Form</a></li>
+        <li><a href="/dashboard" class="active"><i class="fas fa-briefcase"></i> Recommended Internships</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="content">
+      <h1><i class="fas fa-briefcase"></i> Internship Recommendations for {{ role }}</h1>
+
+      <div class="card">
+        <h3><i class="fas fa-brain"></i> Extracted Skills</h3>
+        {% if skills %}
+        <p>{{ skills|join(', ') }}</p>
+      {% else %}
+        <p>No skills detected</p>
+      {% endif %}
+        <h3><i class="fas fa-user-circle"></i> Profile Summary</h3>
+        <p>{{ summary }}</p>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-chart-pie"></i> Skill Gap Analysis</h3>
+        <div style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <canvas id="skillGapChart" style="max-width: 200px; max-height: 200px; display: block; margin: 0 auto;"></canvas>
+          </div>
+          <div style="flex: 1; min-width: 250px;">
+            <p><strong>Skills You Have ({{ have|length }}):</strong></p>
+            <p style="color: #4CAF50; font-weight: 500;">{{ have|join(', ') }}</p>
+
+            <p><strong>Skills Missing ({{ missing|length }}):</strong></p>
+            <p style="color: #F44336; font-weight: 500;">{{ missing|join(', ') }}</p>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-route"></i> Personalized Learning Path</h3>
+        <p>Learn missing skills in the optimal order with recommended courses:</p>
+        {% if learning_path %}
+          {% for item in learning_path %}
+            <div style="margin: 1rem 0; padding: 1rem; border: 1px solid #e0e0e0; border-radius: var(--border-radius); background: var(--accent);">
+              <h4 style="margin: 0 0 0.5rem 0; color: var(--primary);">{{ item.skill }}</h4>
+              {% if item.dependencies %}
+                <p style="margin: 0 0 0.5rem 0; font-size: 0.9em; color: #666;">
+                  <strong>Prerequisites:</strong> {{ item.dependencies|join(", ") }}
+                </p>
+              {% endif %}
+
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                  <h5 style="color: #27ae60; margin: 0 0 0.5rem 0;"><i class="fas fa-gift"></i> Free Courses</h5>
+                  {% for course in item.courses.free %}
+                    <div style="margin: 0.5rem 0; padding: 0.5rem; background: var(--secondary); border-radius: var(--border-radius); border: 1px solid #ddd;">
+                      <strong>{{ course.title }}</strong><br/>
+                      <small>{{ course.platform }} • {{ course.duration }} • ⭐ {{ course.rating }}</small><br/>
+                      <a href="{{ course.url }}" target="_blank" class="btn" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.9rem;"><i class="fas fa-external-link-alt"></i> Learn Now</a>
+                    </div>
+                  {% endfor %}
+                </div>
+
+                <div style="flex: 1; min-width: 300px;">
+                  <h5 style="color: #e74c3c; margin: 0 0 0.5rem 0;"><i class="fas fa-credit-card"></i> Paid Courses</h5>
+                  {% for course in item.courses.paid %}
+                    <div style="margin: 0.5rem 0; padding: 0.5rem; background: var(--secondary); border-radius: var(--border-radius); border: 1px solid #ddd;">
+                      <strong>{{ course.title }}</strong><br/>
+                      <small>{{ course.platform }} • {{ course.price }} • {{ course.duration }} • ⭐ {{ course.rating }}</small><br/>
+                      <a href="{{ course.link }}" target="_blank" class="btn" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; font-size: 0.9rem;"><i class="fas fa-external-link-alt"></i> Learn Now</a>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p><i class="fas fa-check-circle" style="color: #4CAF50;"></i> Great! You have all the required skills for this role.</p>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-search"></i> Top Internships</h3>
+
+        {% if internships %}
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1rem;">
+            {% for job in internships %}
+              <div style="border: 1px solid #ddd; padding: 1rem; border-radius: var(--border-radius); background: var(--secondary);">
+                <h4>{{ job.title }}</h4>
+                <p><strong><i class="fas fa-map-marker-alt"></i> Location:</strong> {{ job.location }}</p>
+                <p><small>{{ job.snippet }}</small></p>
+                <a href="{{ job.link }}" target="_blank" class="btn"><i class="fas fa-external-link-alt"></i> Apply / View</a>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No internship results found.</p>
+        {% endif %}
+      </div>
+
+      <div style="margin-bottom:0.75rem;">
+        <label for="expRange"><strong><i class="fas fa-clock"></i> Experience (years):</strong> <span id="expVal">0</span></label><br/>
+        <input type="range" id="expRange" min="0" max="10" step="1" value="0" style="width: 100%; margin: 0.5rem 0;" />
+        <small>Slide to update salary estimates below.</small>
+      </div>
+
+      <div class="card">
+        <h3><i class="fas fa-chart-line"></i> Estimated Salary Range</h3>
+        <p id="overallSalary" style="font-size: 1.2rem; font-weight: bold; color: var(--primary);">₹{{ salary_range[0] }} — ₹{{ salary_range[1] }} per annum (approx)</p>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const skills = {{ skills|tojson }};
+  const baseRole = {{ role|tojson }};
+  const haveSkills = {{ have|tojson }};
+  const missingSkills = {{ missing|tojson }};
+
+  async function fetchSalary(role, experience){
+    try {
+      const res = await fetch('/api/predict_salary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skills: skills, role: role, experience: experience })
+      });
+      if(!res.ok) return null;
+      return await res.json();
+    } catch(e){
+      return null;
+    }
+  }
+
+  async function updateSalaries(exp){
+    const overall = await fetchSalary(baseRole, exp);
+    if (overall){
+      const overallEl = document.getElementById('overallSalary');
+      overallEl.textContent = `₹${overall.low} — ₹${overall.high} per annum (approx)`;
+    }
+  }
+
+  const expRange = document.getElementById('expRange');
+  const expVal = document.getElementById('expVal');
+  expRange.addEventListener('input', (e) => {
+    const v = parseInt(e.target.value||'0',10);
+    expVal.textContent = v;
+    updateSalaries(v);
+  });
+
+  // Skill Gap Pie Chart
+  const ctx = document.getElementById('skillGapChart').getContext('2d');
+  const totalSkills = haveSkills.length + missingSkills.length;
+  const havePercent = totalSkills > 0 ? Math.round((haveSkills.length / totalSkills) * 100) : 0;
+  const missingPercent = totalSkills > 0 ? Math.round((missingSkills.length / totalSkills) * 100) : 0;
+  const chart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Skills You Have', 'Skills Missing'],
+      datasets: [{
+        data: [haveSkills.length, missingSkills.length],
+        backgroundColor: ['#4CAF50', '#F44336'],
+        borderColor: ['#388E3C', '#D32F2F'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              const percent = totalSkills > 0 ? Math.round((value / totalSkills) * 100) : 0;
+              return `${label}: ${value} (${percent}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+  chart.resize();
+</script>
+{% endblock %}

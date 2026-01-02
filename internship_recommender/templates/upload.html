@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Resume - InternMatch{% endblock %}
+
+{% block content %}
+<div class="with-sidebar">
+  <div class="top-nav">
+    <h1>InternMatch</h1>
+    <div class="user-avatar">
+      {{ (user.full_name or user.username)[0]|upper if user else 'U' }}
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <nav>
+      <ul>
+        <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="/profile"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="/upload" class="active"><i class="fas fa-upload"></i> Upload Resume</a></li>
+        <li><a href="/apply"><i class="fas fa-file-alt"></i> Application Form</a></li>
+        <li><a href="/dashboard"><i class="fas fa-briefcase"></i> Recommended Internships</a></li>
+        <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="content">
+      <h1><i class="fas fa-file-upload"></i> Upload Resume & Get Recommendations</h1>
+
+      <div class="card">
+        <p>Upload your resume to get AI-powered skill extraction, personalized internship recommendations, and a custom learning path.</p>
+
+        <div class="upload-area" style="border: 2px dashed var(--primary); border-radius: var(--border-radius); padding: 2rem; text-align: center; margin: 2rem 0; background: var(--accent);">
+          <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+          <p style="margin: 0 0 1rem 0; font-weight: 500;">Drag & drop your resume here or click to browse</p>
+          <p style="margin: 0; font-size: 0.9rem; color: #666;">Supported formats: PDF, DOC, DOCX</p>
+        </div>
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="resume">Resume File:</label>
+            <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required style="padding: 0.5rem; border: 1px solid #ddd; border-radius: var(--border-radius); width: 100%; box-sizing: border-box;">
+          </div>
+          <div class="form-group">
+            <label for="role">Desired Role:</label>
+            <input type="text" id="role" name="role" placeholder="e.g., Software Engineer" required>
+          </div>
+          <div class="form-group">
+            <label for="location">Preferred Location:</label>
+            <input type="text" id="location" name="location" placeholder="e.g., Bangalore" required>
+          </div>
+          <button type="submit" class="btn" style="width: 100%;">Upload & Analyze</button>
+        </form>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const uploadArea = document.querySelector('.upload-area');
+  const fileInput = document.getElementById('resume');
+
+  uploadArea.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.style.background = 'rgba(255, 123, 0, 0.1)';
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.style.background = 'var(--accent)';
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.style.background = 'var(--accent)';
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      fileInput.files = files;
+    }
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+      uploadArea.innerHTML = `
+        <i class="fas fa-file-alt" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+        <p style="margin: 0; font-weight: 500;">${fileInput.files[0].name}</p>
+        <p style="margin: 0; font-size: 0.9rem; color: #666;">Click to change file</p>
+      `;
+    }
+  });
+</script>
+{% endblock %}
