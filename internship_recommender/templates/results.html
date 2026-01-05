@@ -126,9 +126,14 @@
 
       <div class="card">
         <h3><i class="fas fa-chart-line"></i> Estimated Salary Range</h3>
-        <p id="overallSalary" style="font-size: 1.2rem; font-weight: bold; color: var(--primary);">₹{{ salary_range[0] }} — ₹{{ salary_range[1] }} per annum (approx)</p>
+        <p id="overallSalary" style="font-size: 1.2rem; font-weight: bold; color: var(--primary);">₹{{ salary_range[0]|lpa }} LPA — ₹{{ salary_range[1]|lpa }} LPA (approx)</p>
       </div>
-
+      {% if salary_explanation %}
+      <div class="explanation-card">
+        <h4>Why this salary?</h4>
+        <p>{{ salary_explanation.explanation }}</p>
+      </div>
+    {% endif %}
       <div style="text-align: center; margin-top: 2rem;">
         <a href="/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
       </div>
@@ -161,7 +166,10 @@
     const overall = await fetchSalary(baseRole, exp);
     if (overall){
       const overallEl = document.getElementById('overallSalary');
-      overallEl.textContent = `₹${overall.low} — ₹${overall.high} per annum (approx)`;
+      // Use LPA format if available, otherwise calculate
+      const lowLpa = overall.low_lpa || (overall.low / 100000).toFixed(1);
+      const highLpa = overall.high_lpa || (overall.high / 100000).toFixed(1);
+      overallEl.textContent = `₹${lowLpa} LPA — ₹${highLpa} LPA (approx)`;
     }
   }
 

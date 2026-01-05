@@ -8,6 +8,16 @@ from utils.salary_predictor import predict_salary, ensure_trained_model
 from utils.scraper import ddg_search_internships
 from utils.course_recommender import create_learning_path, get_enhanced_course_recommendations
 from utils.database import db
+from utils.xai_explainer import (
+    get_salary_explainer, get_recommendation_explainer, get_skill_gap_explainer
+)
+
+def format_salary_lpa(rupees):
+    """Convert rupees to LPA (Lakhs Per Annum) format with 1 decimal place."""
+    if rupees is None:
+        return "0.0"
+    lakhs = rupees / 100000
+    return f"{lakhs:.1f}"
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -16,6 +26,12 @@ os.makedirs("models", exist_ok=True)
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'replace-with-secure-key-in-production')
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+# Register template filter for LPA formatting
+@app.template_filter('lpa')
+def lpa_filter(rupees):
+    """Jinja2 filter to format salary in LPA."""
+    return format_salary_lpa(rupees)
 
 # Ensure salary model exists / train lightweight sample
 ensure_trained_model()
@@ -194,6 +210,18 @@ def apply():
 
     # Overall salary
     sal_low, sal_high = predict_salary(skills, role, experience_years=0)
+    
+    # ✅ Generate XAI explanations
+    salary_explanation = None
+    skill_gap_explanation = None
+    try:
+        salary_explainer = get_salary_explainer()
+        salary_explanation = salary_explainer.explain_prediction(skills, role, 0)
+        
+        skill_gap_explainer = get_skill_gap_explainer()
+        skill_gap_explanation = skill_gap_explainer.explain_skill_gap(have, missing, ranked_missing, role)
+    except Exception as e:
+        print(f"Error generating explanations: {e}")
 
     # Save recommendation history
     db.save_recommendation_history(user['id'], role, location, skills, missing, (sal_low, sal_high))
@@ -217,6 +245,8 @@ def apply():
         learning_path=learning_path,
         internships=internships,
         salary_range=(sal_low, sal_high),
+        salary_explanation=salary_explanation,
+        skill_gap_explanation=skill_gap_explanation,
     )
 
 @app.route("/upload", methods=["GET", "POST"])
@@ -279,6 +309,18 @@ def upload():
 
     # ✅ Salary prediction (overall)
     sal_low, sal_high = predict_salary(skills, role, experience_years=0)
+    
+    # ✅ Generate XAI explanations
+    salary_explanation = None
+    skill_gap_explanation = None
+    try:
+        salary_explainer = get_salary_explainer()
+        salary_explanation = salary_explainer.explain_prediction(skills, role, 0)
+        
+        skill_gap_explainer = get_skill_gap_explainer()
+        skill_gap_explanation = skill_gap_explainer.explain_skill_gap(have, missing, ranked_missing, role)
+    except Exception as e:
+        print(f"Error generating explanations: {e}")
 
     # Save recommendation history
     db.save_recommendation_history(user['id'], role, location, skills, missing, (sal_low, sal_high))
@@ -303,6 +345,8 @@ def upload():
         learning_path=learning_path,
         internships=internships,
         salary_range=(sal_low, sal_high),
+        salary_explanation=salary_explanation,
+        skill_gap_explanation=skill_gap_explanation,
     )
 
 @app.route("/api/predict_salary", methods=["POST"])
@@ -311,8 +355,28 @@ def api_predict_salary():
     skills = data.get("skills", [])
     role = data.get("role", "")
     experience = int(data.get("experience", 0) or 0)
+    include_explanation = data.get("explain", False)
+    
     low, high = predict_salary(skills, role, experience_years=experience)
-    return jsonify({"low": low, "high": high})
+    
+    response = {
+        "low": low, 
+        "high": high,
+        "low_lpa": format_salary_lpa(low),
+        "high_lpa": format_salary_lpa(high)
+    }
+    
+    # Add XAI explanation if requested
+    if include_explanation:
+        try:
+            explainer = get_salary_explainer()
+            explanation = explainer.explain_prediction(skills, role, experience)
+            response["explanation"] = explanation
+        except Exception as e:
+            print(f"Error generating explanation: {e}")
+            response["explanation"] = None
+    
+    return jsonify(response)
 
 @app.route("/api/course_recommendations", methods=["POST"])
 def api_course_recommendations():
@@ -323,6 +387,54 @@ def api_course_recommendations():
     
     courses = get_enhanced_course_recommendations(skill)
     return jsonify(courses)
+
+@app.route("/api/explain_salary", methods=["POST"])
+def api_explain_salary():
+    """API endpoint to get detailed salary prediction explanation."""
+    data = request.get_json(force=True) or {}
+    skills = data.get("skills", [])
+    role = data.get("role", "")
+    experience = int(data.get("experience", 0) or 0)
+    
+    try:
+        explainer = get_salary_explainer()
+        explanation = explainer.explain_prediction(skills, role, experience)
+        return jsonify(explanation)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/explain_recommendation", methods=["POST"])
+def api_explain_recommendation():
+    """API endpoint to explain why an internship was recommended."""
+    data = request.get_json(force=True) or {}
+    internship = data.get("internship", {})
+    user_skills = data.get("skills", [])
+    role = data.get("role", "")
+    location = data.get("location", "")
+    score = data.get("score", 0)
+    
+    try:
+        explainer = get_recommendation_explainer()
+        explanation = explainer.explain_recommendation(internship, user_skills, role, location, score)
+        return jsonify(explanation)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/explain_skill_gap", methods=["POST"])
+def api_explain_skill_gap():
+    """API endpoint to explain skill gap analysis."""
+    data = request.get_json(force=True) or {}
+    have_skills = data.get("have_skills", [])
+    missing_skills = data.get("missing_skills", [])
+    ranked_missing = data.get("ranked_missing", [])
+    role = data.get("role", "")
+    
+    try:
+        explainer = get_skill_gap_explainer()
+        explanation = explainer.explain_skill_gap(have_skills, missing_skills, ranked_missing, role)
+        return jsonify(explanation)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

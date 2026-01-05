@@ -78,7 +78,7 @@
           {% for rec in history %}
             <div style="border-left: 3px solid var(--primary); padding-left: 1rem; margin: 1rem 0; background: var(--accent); border-radius: var(--border-radius);">
               <p><strong>{{ rec.role }}</strong> in {{ rec.location or 'Any location' }}</p>
-              <p><small>Salary: ₹{{ rec.salary_range_low }} - ₹{{ rec.salary_range_high }} | {{ rec.created_at }}</small></p>
+              <p><small>Salary: ₹{{ rec.salary_range_low|lpa }} LPA - ₹{{ rec.salary_range_high|lpa }} LPA | {{ rec.created_at }}</small></p>
             </div>
           {% endfor %}
         {% else %}

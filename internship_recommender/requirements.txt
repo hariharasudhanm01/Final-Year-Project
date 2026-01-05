@@ -12,3 +12,4 @@ sentence-transformers
 joblib
 duckduckgo_search
 mysql-connector-python
+shap
