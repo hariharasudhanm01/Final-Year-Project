@@ -9,7 +9,7 @@ import json
 from typing import List, Dict, Tuple
 import difflib
 
-# Try to import skill graph, fallback if not available
+
 try:
     from .skill_graph import rank_missing_skills, G as SKILL_GRAPH
     SKILL_GRAPH_AVAILABLE = True

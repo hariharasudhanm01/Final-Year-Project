@@ -77,9 +77,13 @@
       {% if candidate.resume_path %}
       <div class="card" style="margin-bottom: 2rem;">
         <h3><i class="fas fa-file-pdf"></i> Resume</h3>
-        <a href="/uploads/{{ candidate.resume_path.split('/')[-1] }}" target="_blank" class="btn">
+        {% set resume_filename = candidate.resume_path.split('/')[-1] if '/' in candidate.resume_path else candidate.resume_path.split('\\')[-1] %}
+        <a href="/uploads/{{ resume_filename }}" target="_blank" class="btn">
           <i class="fas fa-download"></i> Download Resume
         </a>
+        <p style="margin-top: 0.5rem; color: #666; font-size: 0.9rem;">
+          <i class="fas fa-info-circle"></i> File: {{ resume_filename }}
+        </p>
       </div>
       {% endif %}
 

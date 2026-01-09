@@ -111,6 +111,7 @@ def register():
     email = request.form.get("email", "").strip()
     password = request.form.get("password", "").strip()
     confirm_password = request.form.get("confirm_password", "").strip()
+    user_role = request.form.get("user_role", "student").strip()
     
     if not all([username, email, password, confirm_password]):
         flash("Please fill in all fields")
@@ -124,8 +125,10 @@ def register():
         flash("Password must be at least 6 characters long")
         return redirect(url_for('register'))
     
-    # Default to student role for simple registration
-    success = db.create_user(username, email, password, full_name=None, user_role='student')
+    if user_role not in ['student', 'hr']:
+        user_role = 'student'
+    
+    success = db.create_user(username, email, password, full_name=None, user_role=user_role)
     if success:
         flash("Account created successfully! Please login.")
         return redirect(url_for('login'))
@@ -298,16 +301,42 @@ def upload():
 
     # ✅ Extract text from resume
     text = extract_text_from_file(save_path)
+    
+    # Debug: Check if text extraction worked
+    if not text or len(text.strip()) < 10:
+        flash("Warning: Could not extract text from resume. Please ensure the file is a valid PDF or DOCX.")
+        # Don't proceed with empty text
+        return redirect(url_for("upload"))
+    
+    print(f"[DEBUG] Extracted {len(text)} characters from resume")
 
     # ✅ Extract skills & profile summary
     skills, summary = extract_skills_and_summary(text)
+    
+    print(f"[DEBUG] Extracted {len(skills)} skills: {skills}")
+    
+    # Debug: Check if skills were extracted
+    if not skills or len(skills) == 0:
+        flash("Warning: No skills found in resume. Please ensure your resume contains skill keywords.")
+        # Still proceed but with empty skills list - this will clear existing skills
+        skills = []
 
+    # Store only the filename (not full path) for easier retrieval
+    resume_filename = filename
+    
     # Update user profile with resume path and extracted data
+    # IMPORTANT: Always update skills from resume, even if empty (to clear old/default skills)
     profile_data = {
-        'resume_path': save_path,
-        'skills': ','.join(skills) if skills else None
+        'resume_path': resume_filename,  # Store only filename, not full path
+        'skills': ','.join(skills) if skills else None  # Clear skills if none found
     }
     db.update_user_profile(user['id'], profile_data)
+    
+    # Flash success message with extracted skills count
+    if skills:
+        flash(f"Resume uploaded successfully! Extracted {len(skills)} skills from your resume: {', '.join(skills[:5])}{'...' if len(skills) > 5 else ''}")
+    else:
+        flash("Resume uploaded, but no skills were detected. You can add skills manually in your profile.")
 
     # Check if Ollama is available and show status
     ollama_available = summarizer.is_available()
@@ -765,8 +794,20 @@ def promote_to_hr():
 @login_required
 def serve_resume(filename):
     """Serve uploaded resume files"""
-    from flask import send_from_directory
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+    from flask import send_from_directory, abort
+    import os
+    
+    # Security: ensure filename doesn't contain path traversal
+    if '..' in filename or '/' in filename or '\\' in filename:
+        abort(404)
+    
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    
+    # Check if file exists
+    if not os.path.exists(file_path):
+        abort(404)
+    
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
