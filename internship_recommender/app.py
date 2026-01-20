@@ -14,6 +14,7 @@ from utils.xai_explainer import (
 from utils.candidate_matcher import (
     match_candidates_to_job, search_and_match_candidates, get_candidate_insights
 )
+from utils.hr_chatbot import hr_chatbot
 
 def format_salary_lpa(rupees):
     """Convert rupees to LPA (Lakhs Per Annum) format with 1 decimal place."""
@@ -724,6 +725,76 @@ def api_match_candidates():
     matched = search_and_match_candidates(job_posting, filters)
     
     return jsonify({"matched_candidates": matched})
+
+@app.route("/api/hr/chatbot", methods=["POST"])
+@login_required
+@hr_required
+def api_hr_chatbot():
+    """API endpoint for HR chatbot"""
+    data = request.get_json(force=True) or {}
+    question = data.get("question", "").strip()
+    candidate_id = data.get("candidate_id")
+    job_id = data.get("job_id")
+    conversation_history = data.get("history", [])
+    
+    if not question:
+        return jsonify({"error": "Question is required"}), 400
+    
+    # Validate candidate_id and job_id if provided
+    if candidate_id:
+        candidate = db.get_candidate_by_id(candidate_id)
+        if not candidate:
+            return jsonify({"error": "Candidate not found"}), 404
+    
+    if job_id:
+        job_posting = db.get_job_posting_by_id(job_id)
+        if not job_posting:
+            return jsonify({"error": "Job posting not found"}), 404
+    
+    # Get chatbot response
+    result = hr_chatbot.chat(
+        question=question,
+        candidate_id=candidate_id,
+        job_id=job_id,
+        conversation_history=conversation_history
+    )
+    
+    return jsonify(result)
+
+@app.route("/api/hr/chatbot/suggestions", methods=["GET"])
+@login_required
+@hr_required
+def api_hr_chatbot_suggestions():
+    """Get suggested questions for chatbot"""
+    candidate_id = request.args.get("candidate_id", type=int)
+    job_id = request.args.get("job_id", type=int)
+    
+    suggestions = hr_chatbot.get_suggested_questions(
+        candidate_id=candidate_id,
+        job_id=job_id
+    )
+    
+    return jsonify({"suggestions": suggestions})
+
+@app.route("/api/hr/chatbot/debug", methods=["GET"])
+@login_required
+@hr_required
+def api_hr_chatbot_debug():
+    """Debug endpoint to check chatbot context"""
+    candidate_id = request.args.get("candidate_id", type=int)
+    job_id = request.args.get("job_id", type=int)
+    
+    context = hr_chatbot._get_candidate_context(candidate_id, job_id)
+    system_prompt = hr_chatbot._build_system_prompt(candidate_id, job_id)
+    
+    return jsonify({
+        "candidate_id": candidate_id,
+        "job_id": job_id,
+        "context_length": len(context),
+        "context_preview": context[:500] if context else "No context",
+        "system_prompt_length": len(system_prompt),
+        "system_prompt_preview": system_prompt[:500] if system_prompt else "No prompt"
+    })
 
 @app.route("/promote-to-hr", methods=["GET", "POST"])
 def promote_to_hr():

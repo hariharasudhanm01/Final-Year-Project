@@ -8,6 +8,7 @@ from .salary_predictor import predict_salary
 import json
 from typing import List, Dict, Tuple
 import difflib
+from datetime import datetime
 
 
 try:
@@ -51,6 +52,111 @@ def _semantic_skill_match(candidate_skill: str, job_skill: str) -> float:
             pass
     
     return 0.0
+
+def _get_degree_rank(degree: str) -> int:
+    """
+    Assign rank to degree levels for tiebreaking.
+    Higher rank = better degree (higher priority).
+    Returns: rank (higher is better)
+    """
+    if not degree:
+        return 0
+    
+    degree_lower = degree.lower().strip()
+    
+    # Master's degrees (highest priority)
+    if 'm.tech' in degree_lower or 'mtech' in degree_lower or 'm.tech' in degree_lower:
+        return 5
+    if 'm.sc' in degree_lower or 'msc' in degree_lower or 'm.sc' in degree_lower:
+        return 4
+    if 'mba' in degree_lower:
+        return 4
+    if 'm.' in degree_lower and ('tech' in degree_lower or 'sc' in degree_lower):
+        return 4
+    
+    # Bachelor's degrees
+    if 'b.tech' in degree_lower or 'btech' in degree_lower or 'b.tech' in degree_lower:
+        return 3
+    if 'b.e' in degree_lower or 'be' in degree_lower:
+        return 3
+    if 'b.sc' in degree_lower or 'bsc' in degree_lower or 'b.sc' in degree_lower:
+        return 2
+    if 'b.' in degree_lower and ('tech' in degree_lower or 'sc' in degree_lower or 'e' in degree_lower):
+        return 2
+    
+    # Diploma/Certificate
+    if 'diploma' in degree_lower:
+        return 1
+    
+    return 0
+
+def _parse_timestamp(timestamp_str):
+    """
+    Parse timestamp string to datetime object for comparison.
+    Handles various timestamp formats.
+    """
+    if not timestamp_str:
+        return None
+    
+    # If it's already a datetime object
+    if isinstance(timestamp_str, datetime):
+        return timestamp_str
+    
+    # Try parsing common formats
+    formats = [
+        '%Y-%m-%d %H:%M:%S',
+        '%Y-%m-%d %H:%M:%S.%f',
+        '%Y-%m-%dT%H:%M:%S',
+        '%Y-%m-%dT%H:%M:%S.%f',
+        '%Y-%m-%d'
+    ]
+    
+    for fmt in formats:
+        try:
+            return datetime.strptime(str(timestamp_str), fmt)
+        except (ValueError, TypeError):
+            continue
+    
+    return None
+
+def _calculate_tiebreaker_score(candidate: Dict, match_result: Dict) -> Tuple:
+    """
+    Calculate tiebreaker factors for candidates with same overall_score.
+    Returns a tuple for sorting: (early_applicant_score, study_year, degree_rank, skill_count)
+    Higher values = better priority (with reverse=True)
+    
+    Tiebreaker priority order:
+    1. Early applicant (earlier created_at = higher priority)
+    2. Higher study year (more advanced students)
+    3. Better degree level
+    4. More total skills
+    """
+    # 1. Early applicant: earlier timestamp = higher score
+    # Use a large reference timestamp and subtract candidate's timestamp
+    # This makes earlier timestamps produce larger scores
+    created_at = candidate.get('created_at')
+    early_applicant_score = 0
+    if created_at:
+        timestamp = _parse_timestamp(created_at)
+        if timestamp:
+            # Use a reference date far in the future (e.g., year 2100)
+            # Earlier timestamps will have larger differences, ranking higher
+            reference_timestamp = datetime(2100, 1, 1)
+            early_applicant_score = (reference_timestamp - timestamp).total_seconds()
+    
+    # 2. Study year (higher is better) - handle None explicitly
+    study_year = candidate.get('study_year')
+    study_year_score = study_year if study_year is not None else 0
+    
+    # 3. Degree rank (higher is better)
+    degree = candidate.get('degree', '')
+    degree_rank = _get_degree_rank(degree)
+    
+    # 4. Total skill count (more skills = better) - handle None explicitly
+    candidate_skills_str = candidate.get('skills') or ''
+    skill_count = len([s.strip() for s in candidate_skills_str.split(',') if s.strip()]) if candidate_skills_str else 0
+    
+    return (early_applicant_score, study_year_score, degree_rank, skill_count)
 
 def calculate_match_score(candidate_skills: List[str], job_skills: List[str], 
                          job_role: str = None, candidate_profile: Dict = None) -> Dict:
@@ -216,8 +322,65 @@ def match_candidates_to_job(candidates: List[Dict], job_posting: Dict) -> List[D
         
         matched_candidates.append(match_result)
     
-    # Sort by overall score (descending)
-    matched_candidates.sort(key=lambda x: x['overall_score'], reverse=True)
+    # Sort by overall score (descending), then by tiebreaker factors
+    # This ensures candidates with same skill scores are ranked appropriately
+    matched_candidates.sort(
+        key=lambda x: (
+            x['overall_score'],  # Primary: match score (descending)
+            _calculate_tiebreaker_score(x['candidate'], x)  # Secondary: tiebreakers
+        ),
+        reverse=True
+    )
+    
+    # Add tiebreaker information to match results for transparency
+    for i, match in enumerate(matched_candidates):
+        candidate = match['candidate']
+        tiebreaker_scores = _calculate_tiebreaker_score(candidate, match)
+        
+        # Add tiebreaker metadata
+        match['tiebreaker_info'] = {
+            'is_early_applicant': candidate.get('created_at') is not None,
+            'application_date': candidate.get('created_at'),
+            'study_year': candidate.get('study_year'),
+            'degree': candidate.get('degree'),
+            'degree_rank': _get_degree_rank(candidate.get('degree', '')),
+            'total_skills': len([s.strip() for s in (candidate.get('skills') or '').split(',') if s.strip()]) if candidate.get('skills') else 0,
+            'tiebreaker_rank': i + 1  # Position after tiebreaking
+        }
+        
+        # Add explanation if this candidate was selected due to tiebreaker
+        if i > 0 and matched_candidates[i-1]['overall_score'] == match['overall_score']:
+            # Same score as previous candidate, explain why ranked differently
+            prev_candidate = matched_candidates[i-1]['candidate']
+            reasons = []
+            
+            # Check early applicant
+            prev_created = _parse_timestamp(prev_candidate.get('created_at'))
+            curr_created = _parse_timestamp(candidate.get('created_at'))
+            if prev_created and curr_created:
+                if curr_created < prev_created:
+                    reasons.append("Early applicant")
+                elif prev_created < curr_created:
+                    match['tiebreaker_info']['note'] = "Ranked lower: earlier applicant preferred"
+            
+            # Check study year (handle None values)
+            curr_study_year = candidate.get('study_year') if candidate.get('study_year') is not None else 0
+            prev_study_year = prev_candidate.get('study_year') if prev_candidate.get('study_year') is not None else 0
+            if curr_study_year > prev_study_year:
+                reasons.append("Higher study year")
+            elif prev_study_year > curr_study_year:
+                match['tiebreaker_info']['note'] = "Ranked lower: higher study year preferred"
+            
+            # Check degree
+            curr_degree_rank = _get_degree_rank(candidate.get('degree', ''))
+            prev_degree_rank = _get_degree_rank(prev_candidate.get('degree', ''))
+            if curr_degree_rank > prev_degree_rank:
+                reasons.append("Better degree level")
+            elif prev_degree_rank > curr_degree_rank:
+                match['tiebreaker_info']['note'] = "Ranked lower: better degree preferred"
+            
+            if reasons:
+                match['tiebreaker_info']['selection_reason'] = "Selected due to: " + ", ".join(reasons)
     
     return matched_candidates
 
