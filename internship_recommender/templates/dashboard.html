@@ -116,7 +116,7 @@
             <tbody>
               {% for item in enhancement_history %}
               <tr style="border-bottom: 1px solid #f0f0f0;">
-                <td style="padding: 10px;">{{ item.created_at.strftime('%Y-%m-%d') }}</td>
+                <td style="padding: 10px;">{{ item.created_at | format_date }}</td>
                 <td style="padding: 10px;">
                   <div style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
                     title="{{ item.job_description }}">
@@ -164,6 +164,373 @@
       </div>
 
 
+      <!-- ATS Educator Chat Widget -->
+      <div id="ats-chat-widget" class="chat-widget" style="display: none;">
+        <div class="chat-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="chat-avatar"><i class="fas fa-robot"></i></div>
+            <div>
+              <h4 style="margin: 0; font-size: 1rem;">ATS Expert</h4>
+              <span style="font-size: 0.75rem; opacity: 0.8;">Online • AI Powered</span>
+            </div>
+          </div>
+          <button onclick="toggleChat()" class="close-chat"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-body" id="chat-messages">
+          <div class="message bot">
+            <div class="message-content">
+              Hello! I'm your ATS & TalentMatch Expert. Ask me about:
+              <br>• How to use this portal & upload resumes
+              <br>• How the AI Enhancer & Analysis works
+              <br>• How ATS systems score your resume
+              <br>• Why resumes get rejected
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" id="chat-input" placeholder="Ask about ATS, keywords, scoring..."
+            onkeypress="handleEnter(event)">
+          <button onclick="sendMessage()" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+
+      <!-- Floating Action Button -->
+      <button class="fab-chat" onclick="toggleChat()" title="Chat with ATS Expert">
+        <i class="fas fa-comments"></i>
+      </button>
+
+      <style>
+        /* Chat Widget Styles */
+        .fab-chat {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+          font-size: 24px;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .fab-chat:hover {
+          transform: scale(1.1);
+        }
+
+        .chat-widget {
+          position: fixed;
+          bottom: 100px;
+          right: 30px;
+          width: 380px;
+          height: 500px;
+          background: white;
+          border-radius: 20px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          z-index: 1000;
+          animation: slideUp 0.3s ease-out;
+          border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .chat-header {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 15px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .chat-avatar {
+          width: 35px;
+          height: 35px;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .close-chat {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 1.2rem;
+          cursor: pointer;
+          opacity: 0.8;
+          transition: opacity 0.2s;
+        }
+
+        .close-chat:hover {
+          opacity: 1;
+        }
+
+        .chat-body {
+          flex: 1;
+          padding: 20px;
+          overflow-y: auto;
+          background: #f9f9f9;
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .message {
+          display: flex;
+          flex-direction: column;
+          max-width: 85%;
+        }
+
+        .message.bot {
+          align-self: flex-start;
+        }
+
+        .message.user {
+          align-self: flex-end;
+        }
+
+        .message-content {
+          padding: 12px 16px;
+          border-radius: 15px;
+          font-size: 0.95rem;
+          line-height: 1.5;
+          position: relative;
+        }
+
+        .message.bot .message-content {
+          background: white;
+          border-bottom-left-radius: 2px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+          color: #333;
+        }
+
+        .message.user .message-content {
+          background: #667eea;
+          color: white;
+          border-bottom-right-radius: 2px;
+          box-shadow: 0 2px 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .chat-input-area {
+          padding: 15px;
+          background: white;
+          border-top: 1px solid #eee;
+          display: flex;
+          gap: 10px;
+        }
+
+        #chat-input {
+          flex: 1;
+          padding: 12px 15px;
+          border: 1px solid #e0e0e0;
+          border-radius: 25px;
+          outline: none;
+          font-size: 0.95rem;
+          transition: border-color 0.2s;
+        }
+
+        #chat-input:focus {
+          border-color: #667eea;
+        }
+
+        .send-btn {
+          width: 45px;
+          height: 45px;
+          border-radius: 50%;
+          background: #667eea;
+          color: white;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+          transform: scale(1.05);
+        }
+
+        /* Citation/Source styles */
+        .sources-container {
+          margin-top: 8px;
+          font-size: 0.8rem;
+          background: #f0f4ff;
+          padding: 8px;
+          border-radius: 8px;
+          border-left: 3px solid #667eea;
+        }
+
+        .source-item {
+          margin-bottom: 4px;
+        }
+
+        .source-item:last-child {
+          margin-bottom: 0;
+        }
+
+        .source-title {
+          font-weight: 600;
+          color: #555;
+        }
+      </style>
+
+      <script>
+        function toggleChat() {
+          const widget = document.getElementById('ats-chat-widget');
+          if (widget.style.display === 'none') {
+            widget.style.display = 'flex';
+            setTimeout(() => document.getElementById('chat-input').focus(), 100);
+          } else {
+            widget.style.display = 'none';
+          }
+        }
+
+        function handleEnter(e) {
+          if (e.key === 'Enter') {
+            sendMessage();
+          }
+        }
+
+        function formatMessage(text) {
+          // Specify which characters need to be escaped
+          // Only implementing basic escaping for simplicity
+          return text.replace(/\n/g, '<br>');
+        }
+
+        async function sendMessage() {
+          const input = document.getElementById('chat-input');
+          const message = input.value.trim();
+
+          if (!message) return;
+
+          // Add user message
+          addMessage(message, 'user');
+          input.value = '';
+
+          // Add loading indicator
+          const loadingId = addLoadingIndicator();
+
+          try {
+            const response = await fetch('/api/ats-educator/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ question: message })
+            });
+
+            const data = await response.json();
+
+            // Remove loading indicator
+            removeMessage(loadingId);
+
+            // Add bot response
+            addMessage(data.answer, 'bot', data.sources);
+
+          } catch (error) {
+            removeMessage(loadingId);
+            addMessage("Sorry, I encountered an error connecting to the ATS Expert. Please try again.", 'bot');
+            console.error(error);
+          }
+        }
+
+        function addLoadingIndicator() {
+          const id = 'msg-' + Date.now();
+          const messagesDiv = document.getElementById('chat-messages');
+
+          const msgDiv = document.createElement('div');
+          msgDiv.id = id;
+          msgDiv.className = 'message bot';
+          msgDiv.innerHTML = `
+            <div class="message-content">
+              <div style="display: flex; gap: 5px;">
+                <span class="dot" style="animation: bounce 1.4s infinite 0s;">.</span>
+                <span class="dot" style="animation: bounce 1.4s infinite 0.2s;">.</span>
+                <span class="dot" style="animation: bounce 1.4s infinite 0.4s;">.</span>
+              </div>
+            </div>
+          `;
+
+          messagesDiv.appendChild(msgDiv);
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          return id;
+        }
+
+        function removeMessage(id) {
+          const msg = document.getElementById(id);
+          if (msg) msg.remove();
+        }
+
+        function addMessage(text, type, sources = null) {
+          const messagesDiv = document.getElementById('chat-messages');
+
+          const msgDiv = document.createElement('div');
+          msgDiv.className = `message ${type}`;
+
+          let content = `<div class="message-content">${formatMessage(text)}`;
+
+          if (sources && sources.length > 0) {
+            content += `<div class="sources-container">`;
+            content += `<div style="font-weight:bold; margin-bottom:4px;">Sources:</div>`;
+            sources.forEach(source => {
+              content += `<div class="source-item">
+                <span class="source-title">${source.type.replace('_', ' ').toUpperCase()}:</span> 
+                ${source.content.substring(0, 100)}...
+              </div>`;
+            });
+            content += `</div>`;
+          }
+
+          content += `</div>`;
+          msgDiv.innerHTML = content;
+
+          messagesDiv.appendChild(msgDiv);
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+      </script>
+
+      <style>
+        @keyframes bounce {
+
+          0%,
+          80%,
+          100% {
+            transform: scale(0);
+          }
+
+          40% {
+            transform: scale(1);
+          }
+        }
+
+        .dot {
+          font-size: 20px;
+          color: #667eea;
+          display: inline-block;
+          margin-top: -10px;
+        }
+      </style>
     </div>
   </div>
 </div>

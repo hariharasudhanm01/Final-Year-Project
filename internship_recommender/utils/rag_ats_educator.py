@@ -36,7 +36,7 @@ class RAGATSEducator:
         self.embedding_model_name = embedding_model
         self.embedding_model = None
         self.ollama_base_url = ollama_base_url
-        self.ollama_model = "llama3.2"
+        self.ollama_model = "tinyllama"
         self.knowledge_base: List[KnowledgeChunk] = []
         
         self._load_embedding_model()
@@ -248,6 +248,98 @@ class RAGATSEducator:
                    For example, "React" and "JavaScript" together are stronger than either alone.
                 """,
                 metadata={"topic": "skill_importance", "importance": "medium"}
+            ),
+            # --- Application Specific Knowledge ---
+            KnowledgeChunk(
+                id="app_001",
+                content_type="app_guide",
+                content="""
+                How the TalentMatch Candidate Portal Works:
+                
+                The Candidate Portal is your central hub for career advancement. Here you can:
+                1. Dashboard: See a summary of your profile, recent activities, and quick actions.
+                2. Profile: Manage your personal details, education, and skills.
+                3. Upload Resume: The starting point for getting recommendations.
+                4. AI Enhancer: Optimize your resume using our LLM-powered tool.
+                5. Jobs/Internships: View recommendation listings matched to your profile.
+                6. Learning Path: See course recommendations to close your skill gaps.
+                """,
+                metadata={"topic": "app_overview", "importance": "high"}
+            ),
+            KnowledgeChunk(
+                id="app_002",
+                content_type="app_guide",
+                content="""
+                How Resume Uploading Works in TalentMatch:
+                
+                1. Navigate to 'Upload Resume' from the sidebar or dashboard.
+                2. Select your resume file (PDF or DOCX format recommended).
+                3. Specify your target Role (e.g., "Data Scientist") and preferred Location.
+                4. The system automatically extracts:
+                   - Your contact info
+                   - Skills & Technologies
+                   - Education details
+                5. This data is used to populate your profile and generate immediate recommendations.
+                """,
+                metadata={"topic": "app_upload", "importance": "high"}
+            ),
+            KnowledgeChunk(
+                id="app_003",
+                content_type="app_guide",
+                content="""
+                How the Analysis Engine Works:
+                
+                After you upload a resume or update your profile, our system performs a 3-step analysis:
+                
+                1. Skill Gap Analysis: We compare your skills against the requirements for your target role.
+                   - "Have": Skills you possess that are relevant.
+                   - "Missing": Critical skills you need to learn.
+                
+                2. Salary Prediction: We estimate your potential salary range based on your skills, role, and market trends.
+                   - We use an Explainable AI (XAI) model to show exactly which skills contribute to your salary.
+                
+                3. Market Match: We check how well you fit current job market demands.
+                """,
+                metadata={"topic": "app_analysis", "importance": "high"}
+            ),
+            KnowledgeChunk(
+                id="app_004",
+                content_type="app_guide",
+                content="""
+                How the AI Resume Enhancer Works:
+                
+                The Enhancer uses advanced AI (Ollama LLM) to rewrite your resume for better ATS performance:
+                
+                1. Analysis: It identifies weak bullet points and missing keywords.
+                2. Optimization: It rewrites your experience descriptions to:
+                   - Use strong action verbs
+                   - Quantify achievements (add numbers/metrics)
+                   - Incorporate relevant keywords naturally
+                3. Formatting: It attempts to preserve your original layout while improving the content.
+                4. Download: You get a downloadable version of your optimized resume.
+                
+                Note: This helps increase your "ATS Score" and chances of passing automated filters.
+                """,
+                metadata={"topic": "app_enhancer", "importance": "high"}
+            ),
+            KnowledgeChunk(
+                id="app_005",
+                content_type="app_guide",
+                content="""
+                How Recommendations Work:
+                
+                TalentMatch provides two types of recommendations:
+                
+                1. Internship/Job Recommendations:
+                   - We Scrape real-time listings from the web (via DuckDuckGo) matching your role/location.
+                   - We also match you against our internal database of HR postings.
+                   - Matches are ranked by "Match Score" based on skill overlap.
+                
+                2. Course Recommendations (Learning Path):
+                   - Based on your "Missing Skills", we suggest specific courses (Coursera, Udemy, etc.).
+                   - Following this path helps you bridge the gap to your target role.
+                """,
+                metadata={"topic": "app_recommendations", "importance": "high"}
             )
         ]
         
@@ -388,25 +480,24 @@ class RAGATSEducator:
         user_context: str
     ) -> str:
         """Generate answer using LLM (Ollama)"""
-        prompt = f"""You are an expert ATS (Applicant Tracking System) consultant helping job seekers understand how ATS systems work and how to improve their resume compatibility.
+        prompt = f"""### System:
+You are an expert ATS (Applicant Tracking System) consultant and TalentMatch Platform Expert.
+Answer the user's question clearly and concisely based on the provided Context.
+- Do NOT start with phrases like "To answer this question", "Based on the context", "Here is", or "Certainly".
+- Do NOT announce what you are going to do.
+- Start your answer IMMEDIATELY.
+- Use bullet points for readability.
+- Speak directly to the user as "you".
 
-Use the following knowledge base information to answer the user's question accurately and helpfully:
-
+### Context:
 {retrieved_context}
 
 {user_context if user_context else ""}
 
-User Question: {question}
+### User Question:
+{question}
 
-Instructions:
-- Answer based on the knowledge base provided above
-- Be specific and actionable
-- If the user's question relates to their resume or a specific job, use the context provided
-- Explain ATS concepts clearly
-- Provide concrete examples when possible
-- If you don't have enough information, say so
-
-Answer:"""
+### Answer:"""
         
         try:
             response = requests.post(

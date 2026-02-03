@@ -1,5 +1,6 @@
 import os
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session, send_from_directory
+from datetime import datetime
 from utils.resume_parser import extract_text_from_file
 from utils.ner_extractor import extract_skills_and_summary
 from utils.ollama_summarizer import summarizer
@@ -45,6 +46,24 @@ def lpa_filter(rupees):
 def basename_filter(path):
     """Jinja2 filter to get filename from path."""
     return os.path.basename(path) if path else ""
+
+@app.template_filter('format_date')
+def format_date_filter(value, format='%Y-%m-%d'):
+    """Format a date string or datetime object."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        try:
+            # Try parsing typical SQL timestamp formats
+            if "T" in value:
+                dt = datetime.fromisoformat(value)
+            else:
+                dt = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+            return dt.strftime(format)
+        except (ValueError, TypeError):
+            # If parsing fails, return original string or a fallback substring
+            return value.split(' ')[0] if ' ' in value else value
+    return value.strftime(format)
 
 # Ensure salary model exists / train lightweight sample
 ensure_trained_model()
@@ -438,6 +457,35 @@ def api_predict_salary():
         except Exception as e:
             print(f"Error generating explanation: {e}")
             response["explanation"] = None
+    
+    return jsonify(response)
+
+@app.route("/api/ats-educator/chat", methods=["POST"])
+def api_ats_educator_chat():
+    """API endpoint for RAG ATS Educator"""
+    data = request.get_json(force=True) or {}
+    question = data.get("question", "").strip()
+    
+    if not question:
+        return jsonify({"error": "Question is required"}), 400
+    
+    user = get_current_user()
+    context = {}
+    
+    # Enrich context with user data if available
+    if user:
+        try:
+            # Get latest enhancement history to provide context
+            enhancement_history = db.get_modification_history(user['id'], limit=1)
+            if enhancement_history:
+                latest = enhancement_history[0]
+                context['ats_score'] = latest.get('ats_score_before')
+                # Add more context as needed
+        except Exception as e:
+            print(f"Error getting user context: {e}")
+            
+    # Generate response
+    response = rag_educator.generate_explanation(question, context=context)
     
     return jsonify(response)
 
