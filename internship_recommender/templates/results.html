@@ -137,17 +137,24 @@
         <small>Slide to update salary estimates below.</small>
       </div>
 
-      <div class="card">
-        <h3><i class="fas fa-chart-line"></i> Estimated Salary Range</h3>
-        <p id="overallSalary" style="font-size: 1.2rem; font-weight: bold; color: var(--primary);">₹{{
-          salary_range[0]|lpa }} LPA — ₹{{ salary_range[1]|lpa }} LPA (approx)</p>
+      <div class="card" style="background: linear-gradient(to right, #f8f9fa, #e9ecef);">
+        <h3><i class="fas fa-money-bill-wave" style="color: #28a745;"></i> What salary you may get</h3>
+        <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+          Based on your current <strong>skills</strong> and <strong>experience</strong>, Gemini AI projects:
+        </p>
+        <div
+          style="background: white; padding: 1rem; border-radius: 12px; border-left: 5px solid #28a745; margin-bottom: 1rem;">
+          <h2 style="margin: 0; color: #28a745;">₹{{ salary_range[0]|lpa }} - ₹{{ salary_range[1]|lpa }} LPA</h2>
+          <small class="text-muted">Estimated Annual CTC</small>
+        </div>
+        {% if salary_explanation %}
+        <div style="background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #ddd;">
+          <strong><i class="fas fa-robot"></i> Gemini AI Analysis:</strong>
+          <p style="margin-top: 0.5rem; color: #555;">{{ salary_explanation }}</p>
+        </div>
+        {% endif %}
       </div>
-      {% if salary_explanation %}
-      <div class="explanation-card">
-        <h4>Why this salary?</h4>
-        <p>{{ salary_explanation.explanation }}</p>
-      </div>
-      {% endif %}
+
       <div style="text-align: center; margin-top: 2rem;">
         <a href="/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
       </div>
