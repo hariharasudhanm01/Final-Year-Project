@@ -18,7 +18,9 @@ from utils.candidate_matcher import (
 from utils.hr_chatbot import hr_chatbot
 from utils.explainable_ats_engine import ats_engine, ExplainableATSEngine
 from utils.rag_ats_educator import rag_educator
+from utils.rag_ats_educator import rag_educator
 from utils.resume_editor import resume_editor
+from utils.gemini_service import gemini_service
 import json
 
 def format_salary_lpa(rupees):
@@ -329,45 +331,54 @@ def upload():
     save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(save_path)
 
-    # ✅ Extract text from resume
-    text = extract_text_from_file(save_path)
+    # ✅ Use Gemini for parsing
+    print(f"Parsing resume (upload) with Gemini: {save_path}")
+    gemini_result = gemini_service.parse_resume(save_path)
     
-    # Debug: Check if text extraction worked
-    if not text or len(text.strip()) < 10:
-        flash("Warning: Could not extract text from resume. Please ensure the file is a valid PDF or DOCX.")
-        # Don't proceed with empty text
-        return redirect(url_for("upload"))
-    
-    print(f"[DEBUG] Extracted {len(text)} characters from resume")
+    skills = []
+    summary = ""
 
-    # ✅ Extract skills & profile summary
-    skills, summary = extract_skills_and_summary(text)
-    
-    print(f"[DEBUG] Extracted {len(skills)} skills: {skills}")
-    
-    # Debug: Check if skills were extracted
-    if not skills or len(skills) == 0:
-        flash("Warning: No skills found in resume. Please ensure your resume contains skill keywords.")
-        # Still proceed but with empty skills list - this will clear existing skills
-        skills = []
+    if gemini_result and not gemini_result.get("error"):
+        # Extract data from Gemini result
+        personal = gemini_result.get("personal_info", {})
+        edu = gemini_result.get("education", {})
+        prof = gemini_result.get("professional_info", {})
+        
+        skills = prof.get("skills", [])
+        if isinstance(skills, str):
+             skills = [s.strip() for s in skills.split(',')]
+        
+        summary = f"{personal.get('name')} | {edu.get('degree')} - {edu.get('stream')} | {prof.get('sector')}"
+        
+        # Update profile with Gemini data
+        profile_data = {
+            'resume_path': filename,
+            'degree': edu.get('degree'),
+            'study_year': edu.get('study_year'),
+            'sector': prof.get('sector'),
+            'stream': edu.get('stream'),
+            'skills': ','.join(skills) if skills else None
+        }
+        db.update_user_profile(user['id'], profile_data)
+        flash(f"Resume parsed by Gemini! Extracted {len(skills)} skills.")
+    else:
+        # Fallback to legacy extraction if Gemini fails
+        print("Gemini parsing failed, falling back to legacy parser.")
+        text = extract_text_from_file(save_path)
+        if not text or len(text.strip()) < 10:
+             flash("Warning: Could not extract text from resume.")
+             return redirect(url_for("upload"))
+        skills, summary = extract_skills_and_summary(text)
+        
+        profile_data = {
+            'resume_path': filename,
+            'skills': ','.join(skills) if skills else None
+        }
+        db.update_user_profile(user['id'], profile_data)
 
     # Store only the filename (not full path) for easier retrieval
     resume_filename = filename
     
-    # Update user profile with resume path and extracted data
-    # IMPORTANT: Always update skills from resume, even if empty (to clear old/default skills)
-    profile_data = {
-        'resume_path': resume_filename,  # Store only filename, not full path
-        'skills': ','.join(skills) if skills else None  # Clear skills if none found
-    }
-    db.update_user_profile(user['id'], profile_data)
-    
-    # Flash success message with extracted skills count
-    if skills:
-        flash(f"Resume uploaded successfully! Extracted {len(skills)} skills from your resume: {', '.join(skills[:5])}{'...' if len(skills) > 5 else ''}")
-    else:
-        flash("Resume uploaded, but no skills were detected. You can add skills manually in your profile.")
-
     # Check if Ollama is available and show status
     ollama_available = summarizer.is_available()
     if not ollama_available:
@@ -389,16 +400,23 @@ def upload():
         if not job.get("location"):
             job["location"] = location
 
-    # ✅ Salary prediction (overall)
-    sal_low, sal_high = predict_salary(skills, role, experience_years=0)
+    # ✅ Salary prediction (Gemini Only)
+    # sal_low, sal_high = predict_salary(skills, role, experience_years=0)
     
-    # ✅ Generate XAI explanations
-    salary_explanation = None
+    # Use Gemini for salary prediction
+    gemini_salary = gemini_service.predict_salary(
+        resume_summary=summary, 
+        skills=', '.join(skills), 
+        role=role, 
+        experience=0 # Default to 0 for upload
+    )
+    sal_low = gemini_salary.get('min_salary', 300000)
+    sal_high = gemini_salary.get('max_salary', 800000)
+    salary_explanation = gemini_salary.get('explanation', "Estimated by Gemini AI based on your profile.")
+
+    # ✅ Generate XAI explanations (Skill Gap Only - Salary handled by Gemini)
     skill_gap_explanation = None
     try:
-        salary_explainer = get_salary_explainer()
-        salary_explanation = salary_explainer.explain_prediction(skills, role, 0)
-        
         skill_gap_explainer = get_skill_gap_explainer()
         skill_gap_explanation = skill_gap_explainer.explain_skill_gap(have, missing, ranked_missing, role)
     except Exception as e:
@@ -430,6 +448,63 @@ def upload():
         salary_explanation=salary_explanation,
         skill_gap_explanation=skill_gap_explanation,
     )
+
+@app.route("/profile-builder", methods=["GET", "POST"])
+@login_required
+def profile_builder():
+    """
+    AI-powered Profile Builder using Gemini for OCR and suggestions.
+    """
+    if request.method == "GET":
+        return render_template("profile_builder.html")
+    
+    if "resume" not in request.files:
+        flash("No resume file provided")
+        return redirect(url_for("profile_builder"))
+
+    user = get_current_user()
+    file = request.files["resume"]
+    
+    if file.filename == "":
+        flash("No selected file")
+        return redirect(url_for("profile_builder"))
+
+    # Save file
+    filename = f"gemini_{user['id']}_{file.filename}"
+    save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    file.save(save_path)
+    
+    # Parse with Gemini
+    print(f"Parsing resume with Gemini: {save_path}")
+    result = gemini_service.parse_resume(save_path)
+    
+    if result.get("error"):
+        flash(f"Error parsing resume: {result.get('error')}")
+        return redirect(url_for("profile_builder"))
+    
+    # ✅ Update User Profile Data based on Gemini result
+    try:
+        edu = result.get('education', {})
+        prof = result.get('professional_info', {})
+        skills_list = prof.get('skills', [])
+        if isinstance(skills_list, str):
+            skills_list = [s.strip() for s in skills_list.split(',')]
+            
+        profile_update = {
+            'resume_path': filename,
+            'degree': edu.get('degree'),
+            'stream': edu.get('stream'),
+            'study_year': edu.get('study_year'),
+            'sector': prof.get('sector'),
+            'skills': ','.join(skills_list) if skills_list else None
+        }
+        # Update DB
+        db.update_user_profile(user['id'], profile_update)
+        flash("Profile automatically updated with extracted details!")
+    except Exception as e:
+        print(f"Error updating profile from builder: {e}")
+
+    return render_template("profile_builder.html", result=result)
 
 @app.route("/recommendations")
 @login_required
@@ -1004,18 +1079,55 @@ def enhance_resume():
         print(f"[DEBUG] Missing skills: {[m.skill for m in ats_result.missing_skills][:5]}")
         print(f"[DEBUG] Weak skills: {[w.skill for w in ats_result.weak_skills][:5]}")
         
-        # 4. Generate modification suggestions
-        print("[DEBUG] Step 5: Generating AI suggestions with Ollama...")
-        print(f"[DEBUG] Ollama available: {resume_editor.ollama_available}")
+        # 4. Generate modification suggestions (Gemini)
+        print("[DEBUG] Step 5: Generating AI suggestions with Gemini...")
         
-        suggestions = resume_editor.suggest_resume_modifications(
-            resume_text=text,
-            jd_text=job_description,
-            missing_skills=[m.skill for m in ats_result.missing_skills],
-            weak_skills=[w.skill for w in ats_result.weak_skills],
-            ats_score=ats_score_before
-        )
+        suggestions = []
         
+        # Skill Enhancement
+        if ats_result.missing_skills:
+            instruction = f"Add these missing skills naturally: {', '.join([m.skill for m in ats_result.missing_skills][:5])}. Keep original format."
+            # Find relevant section content in 'text' (simple heuristic for now, or use gemini to rewrite whole resume which is safer?)
+            # For this exercise, we'll try to use resume_editor.extract_sections to send specific chunks
+            sections = resume_editor.extract_sections(text)
+            skills_section = next((s for s in sections if 'SKILL' in s.name.upper()), None)
+            
+            if skills_section:
+                rewritten = gemini_service.enhance_resume_content("Skills", skills_section.content, job_description, instruction)
+                suggestions.append({
+                    'section': "Skills",
+                    'original_text': skills_section.content,
+                    'suggested_text': rewritten,
+                    'reason': "Added missing skills for ATS compliance.",
+                    'impact_score': len(ats_result.missing_skills) * 5
+                })
+
+        # Experience Enhancement
+        exp_section = next((s for s in resume_editor.extract_sections(text) if 'EXPERIENCE' in s.name.upper()), None)
+        if exp_section:
+            instruction = f"Highlight experiences relevant to: {[m.skill for m in ats_result.missing_skills][:3]}. Use strong action verbs."
+            rewritten_exp = gemini_service.enhance_resume_content("Experience", exp_section.content, job_description, instruction)
+            suggestions.append({
+                'section': "Experience",
+                'original_text': exp_section.content,
+                'suggested_text': rewritten_exp,
+                'reason': "Optimized experience descriptions for role alignment.",
+                'impact_score': 15
+            })
+            
+        # Summary Enhancement
+        sum_section = next((s for s in resume_editor.extract_sections(text) if 'SUMMARY' in s.name.upper() or 'PROFILE' in s.name.upper()), None)
+        if sum_section:
+             instruction = "Rewrite summary to strongly align with the Job Description."
+             rewritten_sum = gemini_service.enhance_resume_content("Summary", sum_section.content, job_description, instruction)
+             suggestions.append({
+                'section': "Summary",
+                'original_text': sum_section.content,
+                'suggested_text': rewritten_sum,
+                'reason': "Aligned professional summary with target role.",
+                'impact_score': 10
+            })
+
         print(f"[DEBUG] Generated {len(suggestions)} suggestions")
         
         # Store suggestions in session (even if empty, so user can edit)
@@ -1031,11 +1143,11 @@ def enhance_resume():
             'filename': filename,
             'suggestions': [
                 {
-                    'section': s.section,
-                    'original': s.original_text,
-                    'suggested': s.suggested_text,
-                    'reason': s.reason,
-                    'impact': s.impact_score
+                    'section': s['section'],
+                    'original': s['original_text'],
+                    'suggested': s['suggested_text'],
+                    'reason': s['reason'],
+                    'impact': s['impact_score']
                 }
                 for s in suggestions
             ],
@@ -1292,6 +1404,23 @@ def rewrite_text_api():
         
     variations = resume_editor.rewrite_text_segment(text, style)
     return jsonify({"variations": variations})
+
+@app.route("/reset-profile", methods=["POST"])
+@login_required
+def reset_profile():
+    """Reset user profile data including skills, extracted info, recommendations, and enhancements"""
+    user = get_current_user()
+    
+    try:
+        if db.reset_user_data(user['id']):
+            flash("Profile successfully reset! All data has been cleared. Please upload a resume to start fresh.")
+        else:
+            flash("Error resetting profile. Please try again.")
+    except Exception as e:
+        print(f"Error in reset_profile: {e}")
+        flash("An unexpected error occurred during reset.")
+        
+    return redirect(url_for('dashboard'))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

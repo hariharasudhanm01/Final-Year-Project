@@ -868,11 +868,48 @@ class DatabaseManager:
             if cursor:
                 cursor.close()
 
+    def reset_user_data(self, user_id: int) -> bool:
+        """
+        Hard reset: Clears all user data (Profile, Recommendations, Enhancements) except the user account itself.
+        """
+        cursor = None
+        try:
+            cursor = self._get_cursor()
+            placeholder = self._get_placeholder()
+            
+            # 1. Delete Profile Data (Cascades usually handle this if user is deleted, but here we just want to clear data)
+            # Actually, let's just delete the profile record entirely to force a fresh start
+            cursor.execute(f"DELETE FROM user_profiles WHERE user_id = {placeholder}", (user_id,))
+            
+            # 2. Delete Recommendation History
+            cursor.execute(f"DELETE FROM recommendation_history WHERE user_id = {placeholder}", (user_id,))
+            
+            # 3. Delete Resume Modifications (if table exists)
+            try:
+                cursor.execute(f"DELETE FROM resume_modifications WHERE user_id = {placeholder}", (user_id,))
+            except Exception:
+                pass # Table might not exist yet
+                
+            self.connection.commit()
+            return True
+        except Exception as e:
+            print(f"Error resetting user data: {e}")
+            self.connection.rollback()
+            return False
+        finally:
+            if cursor:
+                cursor.close()
+
     def close(self):
         """Close database connection"""
-        if self.connection and self.connection.is_connected():
+        if self.connection and hasattr(self.connection, 'is_connected') and self.connection.is_connected():
             self.connection.close()
             print("Database connection closed")
+        elif self.connection:
+             try:
+                self.connection.close() # For SQLite
+             except:
+                 pass
 
 # Global database instance
 db = DatabaseManager()

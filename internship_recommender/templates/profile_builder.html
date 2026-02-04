@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Builder & AI Parser - TalentMatch{% endblock %}
+
+{% block content %}
+<div class="with-sidebar">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <nav>
+            <ul>
+                <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="/profile"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="/upload"><i class="fas fa-upload"></i> Upload Resume</a></li>
+                <li><a href="/enhance-resume"><i class="fas fa-magic"></i> AI Resume Enhancer</a></li>
+                <li><a href="/profile-builder" class="active"><i class="fas fa-id-card-alt"></i> Profile Builder
+                        (AI)</a></li>
+                <li><a href="/apply"><i class="fas fa-file-alt"></i> Application Form</a></li>
+                <li><a href="/recommendations"><i class="fas fa-briefcase"></i> Job Recommendations</a></li>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container py-5">
+            <div class="row mb-5 text-center">
+                <div class="col-lg-10 mx-auto">
+                    <h1 class="display-5 fw-bold mb-3 text-gradient">AI Profile Builder</h1>
+                    <p class="lead text-muted">Upload your resume to extract professional details and get personalized
+                        career growth suggestions using Gemini 1.5 Pro.</p>
+                </div>
+            </div>
+
+            {% if not result %}
+            <!-- Modern Upload Section -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                        <div class="card-body p-0">
+                            <form action="{{ url_for('profile_builder') }}" method="POST" enctype="multipart/form-data"
+                                id="uploadForm">
+                                <div class="upload-zone p-5 text-center position-relative" id="dropZone">
+                                    <input type="file" name="resume" id="resumeInput"
+                                        class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer"
+                                        accept=".pdf,.png,.jpg,.jpeg" required onchange="showFileName(this)">
+
+                                    <div class="mb-4">
+                                        <div class="icon-circle bg-primary-subtle text-primary mx-auto mb-3">
+                                            <i class="fas fa-cloud-upload-alt fa-3x"></i>
+                                        </div>
+                                        <h4 class="fw-bold">Drag & Drop or Click to Upload</h4>
+                                        <p class="text-muted">Support for PDF, DOCX, JPG, PNG</p>
+                                    </div>
+
+                                    <div id="fileInfo" class="d-none mt-3">
+                                        <span class="badge bg-primary px-3 py-2 rounded-pill fs-6">
+                                            <i class="fas fa-file-alt me-2"></i> <span id="fileName">filename.pdf</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="bg-light p-4 text-center border-top">
+                                    <button type="submit"
+                                        class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm hover-scale">
+                                        <i class="fas fa-magic me-2"></i> Analyze Profile with Gemini
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+
+            <!-- Results Section -->
+            <div class="row g-4">
+                <!-- Left Column: Extracted Profile -->
+                <div class="col-lg-7">
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+                        <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="icon-circle-sm bg-success-subtle text-success me-3">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <h4 class="fw-bold mb-0">Extracted Profile</h4>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            {% if result.error %}
+                            <div class="alert alert-danger rounded-3"><i class="fas fa-exclamation-triangle me-2"></i>
+                                {{ result.error }}</div>
+                            {% else %}
+
+                            <!-- Personal Info Grid -->
+                            <div class="p-3 bg-light rounded-3 mb-4">
+                                <h6 class="text-uppercase text-muted small fw-bold mb-3 ls-1">Personal Details</h6>
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <label class="text-muted small">Full Name</label>
+                                        <div class="fw-bold text-dark">{{ result.personal_info.name }}</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="text-muted small">Email Address</label>
+                                        <div class="fw-bold text-dark text-break">{{ result.personal_info.email }}</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="text-muted small"><i
+                                                class="fab fa-linkedin text-primary me-1"></i> LinkedIn</label>
+                                        <div class="text-truncate">
+                                            {% if result.personal_info.linkedin and result.personal_info.linkedin !=
+                                            'Not Found' %}
+                                            <a href="{{ result.personal_info.linkedin }}" target="_blank"
+                                                class="text-decoration-none">{{ result.personal_info.linkedin }}</a>
+                                            {% else %}
+                                            <span class="text-muted small">Not Linked</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="text-muted small"><i class="fab fa-github text-dark me-1"></i>
+                                            GitHub</label>
+                                        <div class="text-truncate">
+                                            {% if result.personal_info.github and result.personal_info.github != 'Not
+                                            Found' %}
+                                            <a href="{{ result.personal_info.github }}" target="_blank"
+                                                class="text-decoration-none">{{ result.personal_info.github }}</a>
+                                            {% else %}
+                                            <span class="text-muted small">Not Linked</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Education & Prof -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <h6 class="text-uppercase text-muted small fw-bold mb-3 ls-1">Education</h6>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><strong>Degree:</strong> {{ result.education.degree }}</li>
+                                        <li class="mb-2"><strong>Stream:</strong> {{ result.education.stream }}</li>
+                                        <li class="mb-2"><strong>Year:</strong> {{ result.education.study_year }}</li>
+                                        <li class="mb-0"><strong>College:</strong> {{ result.education.college }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-uppercase text-muted small fw-bold mb-3 ls-1">Professional</h6>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><strong>Sector:</strong> {{ result.professional_info.sector }}
+                                        </li>
+                                        <li class="mb-2"><strong>Experience:</strong> {{
+                                            result.professional_info.experience_years }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Skills -->
+                            <div>
+                                <h6 class="text-uppercase text-muted small fw-bold mb-3 ls-1">Identified Skills</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for skill in result.professional_info.skills %}
+                                    <span class="badge bg-white text-dark border shadow-sm py-2 px-3 fw-normal">{{ skill
+                                        }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: AI Suggestions -->
+                <div class="col-lg-5">
+                    <!-- LinkedIn Strategy -->
+                    <div
+                        class="card shadow-sm border-0 rounded-4 mb-4 bg-gradient-primary text-white overflow-hidden position-relative internal-card-override">
+                        <div class="card-body p-4 position-relative z-1">
+                            <h5 class="fw-bold mb-4 border-bottom border-white border-opacity-25 pb-2">
+                                <i class="fab fa-linkedin me-2"></i>Profile Optimization
+                            </h5>
+                            <ul class="list-unstyled mb-0">
+                                {% for tip in result.suggestions.linkedin_maintenance %}
+                                <li class="mb-3 d-flex align-items-start">
+                                    <i class="fas fa-check-circle mt-1 me-3 text-warning"></i>
+                                    <span class="opacity-90">{{ tip }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="position-absolute top-0 end-0 opacity-10 p-3">
+                            <i class="fab fa-linkedin fa-8x"></i>
+                        </div>
+                    </div>
+
+                    <!-- Project Ideas -->
+                    <div class="card shadow-sm border-0 rounded-4 bg-dark text-white overflow-hidden">
+                        <div class="card-header bg-transparent border-white border-opacity-10 pt-4 px-4">
+                            <h5 class="fw-bold mb-0 text-warning"><i class="fas fa-lightbulb me-2"></i>Project Ideas
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            {% for project in result.suggestions.github_project_ideas %}
+                            <div class="mb-4 pb-4 border-bottom border-secondary last-no-border">
+                                <h6 class="fw-bold text-white mb-2">{{ project.title }}</h6>
+                                <p class="small text-secondary mb-2">{{ project.description }}</p>
+                                <div>
+                                    {% for tech in project.tech_stack %}
+                                    <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary">{{
+                                        tech }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="card-footer bg-transparent border-top border-secondary p-4">
+                            <a href="{{ url_for('profile_builder') }}" class="btn btn-outline-light w-100 rounded-pill">
+                                <i class="fas fa-redo me-2"></i> Start New Analysis
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <style>
+                /* Custom Styles for Profile Builder */
+                .text-gradient {
+                    background: linear-gradient(135deg, #2b6cb0, #667eea);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+
+                .upload-zone {
+                    border: 2px dashed #cbd5e0;
+                    border-radius: 1rem;
+                    transition: all 0.3s ease;
+                    background-color: #f8fafc;
+                }
+
+                .upload-zone:hover,
+                .upload-zone.dragover {
+                    border-color: #667eea;
+                    background-color: #ebf4ff;
+                }
+
+                .icon-circle {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .icon-circle-sm {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.25rem;
+                }
+
+                .cursor-pointer {
+                    cursor: pointer;
+                }
+
+                .bg-gradient-primary {
+                    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+                }
+
+                .hover-scale {
+                    transition: transform 0.2s;
+                }
+
+                .hover-scale:hover {
+                    transform: translateY(-2px);
+                }
+
+                .ls-1 {
+                    letter-spacing: 1px;
+                }
+
+                .last-no-border:last-child {
+                    border-bottom: none !important;
+                    padding-bottom: 0 !important;
+                    margin-bottom: 0 !important;
+                }
+
+                /* Fix for nested background colors if base styles conflict */
+                .bg-primary-subtle {
+                    background-color: #cfe2ff !important;
+                }
+
+                .bg-success-subtle {
+                    background-color: #d1e7dd !important;
+                }
+            </style>
+
+            <script>
+                function showFileName(input) {
+                    if (input.files && input.files[0]) {
+                        document.getElementById('fileName').textContent = input.files[0].name;
+                        document.getElementById('fileInfo').classList.remove('d-none');
+                        document.getElementById('dropZone').classList.add('border-primary');
+                    }
+                }
+
+                // Drag and drop visual effects
+                const dropZone = document.getElementById('dropZone');
+                if (dropZone) {
+                    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                        dropZone.addEventListener(eventName, preventDefaults, false);
+                    });
+
+                    function preventDefaults(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+
+                    ['dragenter', 'dragover'].forEach(eventName => {
+                        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+                    });
+
+                    ['dragleave', 'drop'].forEach(eventName => {
+                        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+                    });
+                }
+            </script>
+            {% endblock %}
