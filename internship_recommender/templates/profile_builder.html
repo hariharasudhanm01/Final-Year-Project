@@ -36,8 +36,7 @@
 
         <div class="content">
             <div style="text-align: center; margin-bottom: 3rem;">
-                <h1
-                    style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #4f46e5, #4338ca); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                <h1 class="gradient-text">
                     AI Profile Builder</h1>
                 <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
                     Upload your resume to extract professional details and get personalized career growth suggestions
@@ -298,6 +297,15 @@
 
 <!-- Responsive Grid adjustment -->
 <style>
+    .gradient-text {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #4f46e5, #4338ca);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
     @media (max-width: 1024px) {
         div[style*="grid-template-columns"] {
             grid-template-columns: 1fr !important;
