@@ -1,5 +1,9 @@
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
+
 import os
-from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session, send_from_directory
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session, send_from_directory, send_file
 from datetime import datetime
 from utils.resume_parser import extract_text_from_file
 from utils.ner_extractor import extract_skills_and_summary
@@ -1155,13 +1159,24 @@ def enhance_resume():
             'job_description': job_description[:1000]
         }
         
+        # [NEW] Generate Design Feedback
+        print("[DEBUG] Generating Design Feedback...")
+        design_feedback = gemini_service.generate_design_feedback(text)
+        
+        ats_breakdown = ats_result.score_breakdown
+        
+        session['enhancement_data']['design_feedback'] = design_feedback # Persist in session too if needed
+        session['enhancement_data']['ats_breakdown'] = ats_breakdown
+        
         print("[DEBUG] Step 7: Rendering review template...")
         return render_template(
             "review_enhancements.html",
             user=user,
             suggestions=suggestions,
             ats_score_before=ats_score_before,
-            job_description=job_description
+            ats_breakdown=ats_breakdown,
+            job_description=job_description,
+            design_feedback=design_feedback
         )
     
     except Exception as e:
@@ -1239,14 +1254,14 @@ def apply_enhancements():
         
         # Note: apply_modifications_to_docx needs to work well. 
         # The session stored 'original_path' is still valid.
-        success = resume_editor.apply_modifications_to_docx(
+        success, error_msg = resume_editor.apply_modifications_to_docx(
             enhancement_data['original_path'],
             final_suggestions_to_apply,
             modified_path
         )
         
         if not success:
-            flash("Error applying modifications. Make sure python-docx is installed.")
+            flash(error_msg or "Error applying modifications for unknown reason.")
             return redirect(url_for("enhance_resume"))
         
         # DB Save
@@ -1405,6 +1420,105 @@ def rewrite_text_api():
     variations = resume_editor.rewrite_text_segment(text, style)
     return jsonify({"variations": variations})
 
+@app.route("/download-template/<template_name>")
+@login_required
+def download_template(template_name):
+    """Generates and downloads the resume in a specific template format"""
+    user = get_current_user()
+    
+    # Get original file path from session
+    if 'enhancement_data' not in session or 'original_path' not in session['enhancement_data']:
+        flash("Session expired or no resume found. Please upload again.")
+        return redirect(url_for('enhance_resume'))
+        
+    original_path = session['enhancement_data']['original_path']
+    filename = session['enhancement_data'].get('filename', 'resume.docx')
+    
+    # CLEAR LEGACY SESSION DATA (fix cookie overflow)
+    session.pop('parsed_resume_data', None)
+    
+    # CACHING STRATEGY: Use a local JSON file to store parsed data
+    # This avoids storing large objects in the session cookie (which breaks things)
+    parsed_json_path = original_path + ".parsed.json"
+    
+    parsed_data = None
+    if os.path.exists(parsed_json_path):
+        try:
+            import json
+            with open(parsed_json_path, 'r', encoding='utf-8') as f:
+                parsed_data = json.load(f)
+            print(f"[DEBUG] Loaded parsed resume data from cache: {parsed_json_path}")
+        except Exception as e:
+            print(f"[WARN] Failed to load cached JSON: {e}")
+            parsed_data = None
+
+    if not parsed_data:
+        print(f"[DEBUG] Parsing resume for template generation (Fresh Call): {original_path}")
+        try:
+            parsed_data = gemini_service.parse_resume(original_path)
+            
+            if "error" in parsed_data:
+                print(f"[ERROR] API Returned Error: {parsed_data['error']}")
+                flash(f"Error generating template: {parsed_data['error']}")
+                return redirect(url_for('enhance_resume'))
+                
+            # SANITIZATION: Ensure critical fields are the right type
+            if not isinstance(parsed_data.get('personal_info'), dict):
+                parsed_data['personal_info'] = {}
+            if not isinstance(parsed_data.get('skills'), dict):
+                parsed_data['skills'] = {}
+            
+            # Ensure lists
+            for field in ['education', 'experience', 'projects']:
+                val = parsed_data.get(field)
+                if not isinstance(val, list):
+                    if isinstance(val, dict): parsed_data[field] = [val]
+                    else: parsed_data[field] = []
+
+            # Refine Data with current user details if available
+            if not parsed_data['personal_info'].get('name') or parsed_data['personal_info']['name'] == "Full Name":
+                 parsed_data['personal_info']['name'] = user['full_name']
+            
+            # Save to Cache File (instead of session)
+            import json
+            try:
+                with open(parsed_json_path, 'w', encoding='utf-8') as f:
+                    json.dump(parsed_data, f, indent=2)
+                print(f"[DEBUG] Saved parsed data to cache: {parsed_json_path}")
+            except Exception as e:
+                print(f"[WARN] Failed to save cache file: {e}")
+            
+        except Exception as e:
+            print(f"Error parsing resume: {e}")
+            import traceback
+            traceback.print_exc()
+            flash("An error occurred while analyzing the resume. Please try again later.")
+            return redirect(url_for('enhance_resume'))
+             
+    # Create output filename
+    try:
+        template_clean = template_name.lower().replace(" ", "_")
+        output_filename = f"template_{template_clean}_{filename}"
+        if not output_filename.endswith('.docx'):
+            output_filename += '.docx'
+            
+        output_path = os.path.join(app.config["UPLOAD_FOLDER"], output_filename)
+        
+        # Generate DOCX
+        success = resume_editor.create_resume_from_template(parsed_data, template_name, output_path)
+        
+        if success and os.path.exists(output_path):
+            return send_file(output_path, as_attachment=True, download_name=output_filename)
+        else:
+            flash("Failed to generate template. Please try again.")
+            return redirect(url_for('enhance_resume'))
+            
+    except Exception as e:
+        print(f"Error in download_template: {e}")
+        import traceback
+        traceback.print_exc()
+        flash("An error occurred while generating the template.")
+        return redirect(url_for('enhance_resume'))
 @app.route("/reset-profile", methods=["POST"])
 @login_required
 def reset_profile():

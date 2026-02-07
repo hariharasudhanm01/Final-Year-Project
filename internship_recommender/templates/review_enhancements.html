@@ -218,18 +218,18 @@
             <i class="fas fa-plus-square"></i>
             <span>Add</span>
         </button>
-        <button class="tool-btn" title="Templates">
+        <button class="tool-btn" title="Templates" id="btnTemplates">
             <i class="fas fa-th-large"></i>
             <span>Templates</span>
         </button>
-        <button class="tool-btn" title="Design">
+        <button class="tool-btn" title="Design" id="btnDesign">
             <i class="fas fa-palette"></i>
             <span>Design</span>
         </button>
 
         <div style="height: 1px; width: 60%; background: #eee; margin: 10px 0;"></div>
 
-        <button class="tool-btn active" title="Improve Text">
+        <button class="tool-btn active" title="Improve Text" id="btnImprove">
             <i class="fas fa-magic" style="color: #667eea;"></i>
             <span style="color: #667eea; font-weight:600;">Improve</span>
         </button>
@@ -240,7 +240,125 @@
         </div>
     </div>
 
-    <!-- Main Panel -->
+    <!-- Design Feedback Panel (Hidden by default) -->
+    <div id="designPanel" class="editor-right-panel"
+        style="display: none; border-left: 1px solid #e0e0e0; background: #fff;">
+        <h5 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+            <i class="fas fa-palette"></i> Design Review
+        </h5>
+
+        {% if design_feedback %}
+        <div style="text-align: center; margin: 20px 0;">
+            <div style="position: relative; display: inline-block;">
+                <svg viewBox="0 0 36 36" class="circular-chart blue" style="width: 80px; height: 80px;">
+                    <path class="circle-bg"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        style="fill: none; stroke: #eee; stroke-width: 3.8;" />
+                    <path class="circle" stroke-dasharray="{{ design_feedback.design_score * 10 }}, 100"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        style="fill: none; stroke: #667eea; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards;" />
+                </svg>
+                <div
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: 1.2rem; color: #667eea;">
+                    {{ design_feedback.design_score }}/10
+                </div>
+            </div>
+            <p style="margin: 5px 0 0; font-size: 0.9rem; color: #666;">Structure Score</p>
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <h6 style="font-size: 0.9rem; text-transform: uppercase; color: #999; margin-bottom: 10px;">Critique</h6>
+            <ul style="padding-left: 20px; font-size: 0.9rem; color: #555;">
+                {% for point in design_feedback.critique %}
+                <li style="margin-bottom: 8px;">{{ point }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <h6 style="font-size: 0.9rem; text-transform: uppercase; color: #999; margin-bottom: 10px;">Recommended
+                Template</h6>
+            <div style="background: #f0f4ff; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
+                <strong style="display: block; color: #4338ca; margin-bottom: 5px;">{{
+                    design_feedback.recommended_template }}</strong>
+                <p style="margin: 0; font-size: 0.85rem; color: #555;">{{ design_feedback.template_reason }}</p>
+            </div>
+        </div>
+
+
+        {% else %}
+        <p>No design analysis available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Templates Panel (Hidden by default) -->
+    <div id="templatesPanel" class="editor-right-panel"
+        style="display: none; border-left: 1px solid #e0e0e0; background: #fff;">
+        <h5 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+            <i class="fas fa-th-large"></i> Choose Template
+        </h5>
+
+        <div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <a href="{{ url_for('download_template', template_name='modern') }}"
+                    style="text-decoration: none; color: inherit;">
+                    <div style="border: 1px solid #eee; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.borderColor='#667eea'; this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.borderColor='#eee'; this.style.transform='translateY(0)'">
+                        <div
+                            style="height: 60px; background: #f9fafb; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #667eea;">
+                            <i class="far fa-file-alt"></i>
+                        </div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">Modern Blue</span>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('download_template', template_name='professional') }}"
+                    style="text-decoration: none; color: inherit;">
+                    <div style="border: 1px solid #eee; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.borderColor='#667eea'; this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.borderColor='#eee'; this.style.transform='translateY(0)'">
+                        <div
+                            style="height: 60px; background: #f9fafb; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #4a5568;">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">Professional</span>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('download_template', template_name='modern') }}"
+                    style="text-decoration: none; color: inherit;">
+                    <div style="border: 1px solid #eee; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.borderColor='#667eea'; this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.borderColor='#eee'; this.style.transform='translateY(0)'">
+                        <div
+                            style="height: 60px; background: #f9fafb; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #ed8936;">
+                            <i class="fas fa-columns"></i>
+                        </div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">Minimalist</span>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('download_template', template_name='professional') }}"
+                    style="text-decoration: none; color: inherit;">
+                    <div style="border: 1px solid #eee; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.borderColor='#667eea'; this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.borderColor='#eee'; this.style.transform='translateY(0)'">
+                        <div
+                            style="height: 60px; background: #f9fafb; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #48bb78;">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <span style="font-size: 0.8rem; font-weight: 600;">Academic</span>
+                    </div>
+                </a>
+            </div>
+            <p style="margin-top: 10px; font-size: 0.75rem; color: #999; text-align: center;">
+                * Click to download the resume in the selected template format.
+            </p>
+        </div>
+    </div>
+
+    <!-- Magic Rewrite Modal -->
     <div class="editor-main">
         <form method="POST" action="{{ url_for('apply_enhancements') }}" id="enhancementForm"
             style="display: flex; flex-direction: column; height: 100%;">
@@ -320,7 +438,30 @@
                 </div>
 
                 <!-- Right contextual panel (mimicking 'History' or 'Check') -->
-                <div class="editor-right-panel">
+                <div class="editor-right-panel" id="checklistPanel">
+                    <h5 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom:10px; margin-bottom: 15px;">
+                        <i class="fas fa-chart-line"></i> ATS Score Breakdown
+                    </h5>
+
+                    {% if ats_breakdown %}
+                    <div style="margin-bottom: 20px;">
+                        {% for criterion, score in ats_breakdown.items() %}
+                        <div style="margin-bottom: 10px;">
+                            <div
+                                style="display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 0.85rem;">
+                                <span>{{ criterion }}</span>
+                                <span style="font-weight: 600;">{{ score }}%</span>
+                            </div>
+                            <div style="background: #eee; height: 6px; border-radius: 3px; overflow: hidden;">
+                                <div
+                                    style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: {{ score }}%;">
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
                     <h5 style="margin-top: 0;">Optimization Checklist</h5>
 
                     {% for suggestion in suggestions %}
@@ -346,115 +487,80 @@
         </form>
     </div>
 
-    <!-- Magic Rewrite Modal -->
-    <div id="rewriteModal"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
-        <div
-            style="background: white; padding: 25px; border-radius: 12px; width: 500px; max-width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-            <h4 style="margin-top: 0; margin-bottom: 20px;"><i class="fas fa-magic text-primary"></i> AI Rewrite Options
-            </h4>
-            <div id="rewriteOptions" style="display: flex; flex-direction: column; gap: 10px;">
-                <!-- Loading State -->
-                <div style="text-align: center; padding: 20px;">
-                    <i class="fas fa-spinner fa-spin fa-2x text-muted"></i>
-                    <p class="text-muted mt-2">Generating variations...</p>
-                </div>
-            </div>
-            <div style="margin-top: 20px; text-align: right;">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="closeRewriteModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
+
 </div>
 
+
 <script>
-    let currentTargetTextarea = null;
-
-    function openRewriteModal(textarea) {
-        currentTargetTextarea = textarea;
-        const textToRewrite = textarea.value;
-        const modal = document.getElementById('rewriteModal');
-        const optionsContainer = document.getElementById('rewriteOptions');
-
-        modal.style.display = 'flex';
-        optionsContainer.innerHTML = `
-            <div style="text-align: center; padding: 20px;">
-                <i class="fas fa-spinner fa-spin fa-2x text-muted"></i>
-                <p class="text-muted mt-2">Generating variations...</p>
-            </div>
-        `;
-
-        // Call API
-        fetch('/api/rewrite-text', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: textToRewrite })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.variations) {
-                    let html = '';
-                    data.variations.forEach((variation, index) => {
-                        html += `
-                        <div class="variation-card" onclick="applyVariation('${index}')" style="padding: 15px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                            <div style="font-size: 0.9rem;">${variation}</div>
-                            <input type="hidden" id="var_${index}" value="${variation.replace(/"/g, '&quot;')}">
-                        </div>
-                    `;
-                    });
-                    optionsContainer.innerHTML = html;
-
-                    // Add hover effect via JS since inline styles are tricky for hover
-                    document.querySelectorAll('.variation-card').forEach(card => {
-                        card.onmouseover = () => card.style.background = '#f8f9fa';
-                        card.onmouseout = () => card.style.background = 'white';
-                    });
-                } else {
-                    optionsContainer.innerHTML = '<p class="text-danger">Failed to generate variations.</p>';
-                }
-            })
-            .catch(err => {
-                optionsContainer.innerHTML = '<p class="text-danger">Error connecting to AI service.</p>';
-                console.error(err);
-            });
-    }
-
-    function applyVariation(index) {
-        if (currentTargetTextarea) {
-            const newVal = document.getElementById(`var_${index}`).value;
-            currentTargetTextarea.value = newVal;
-
-            // Highlight effect
-            currentTargetTextarea.style.background = '#e6fffa';
-            setTimeout(() => currentTargetTextarea.style.background = '#fff', 1000);
-
-            closeRewriteModal();
-        }
-    }
-
-    function closeRewriteModal() {
-        document.getElementById('rewriteModal').style.display = 'none';
-        currentTargetTextarea = null;
-    }
-
-    // Attach "Magic Button" to all textareas on load
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('textarea.editable-content').forEach(textarea => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn btn-sm btn-outline-primary';
-            btn.innerHTML = '<i class="fas fa-magic"></i> Rewrite';
-            btn.style.marginTop = '5px';
-            btn.style.fontSize = '0.8rem';
-            btn.title = "Generate AI variations for this text";
+        const btnDesign = document.getElementById('btnDesign');
+        const btnImprove = document.getElementById('btnImprove');
+        const btnTemplates = document.getElementById('btnTemplates');
 
-            btn.onclick = (e) => {
-                e.preventDefault(); // Prevent form submit
-                openRewriteModal(textarea);
-            };
+        const designPanel = document.getElementById('designPanel');
+        const checklistPanel = document.getElementById('checklistPanel');
+        const templatesPanel = document.getElementById('templatesPanel');
 
-            textarea.parentNode.appendChild(btn);
-        });
+        // Helper to update button styles
+        function updateButton(btn, isActive) {
+            if (!btn) return;
+            const icon = btn.querySelector('i');
+            const span = btn.querySelector('span');
+
+            if (isActive) {
+                btn.classList.add('active');
+                if (icon) icon.style.color = '#667eea';
+                if (span) {
+                    span.style.color = '#667eea';
+                    span.style.fontWeight = '600';
+                }
+            } else {
+                btn.classList.remove('active');
+                if (icon) icon.style.color = '#666';
+                if (span) {
+                    span.style.color = '#666';
+                    span.style.fontWeight = 'normal';
+                }
+            }
+        }
+
+        if (btnDesign && btnImprove && designPanel && checklistPanel) {
+
+            btnDesign.addEventListener('click', (e) => {
+                e.preventDefault();
+                designPanel.style.display = 'block';
+                checklistPanel.style.display = 'none';
+                if (templatesPanel) templatesPanel.style.display = 'none';
+
+                updateButton(btnDesign, true);
+                updateButton(btnImprove, false);
+                updateButton(btnTemplates, false);
+            });
+
+            btnImprove.addEventListener('click', (e) => {
+                e.preventDefault();
+                designPanel.style.display = 'none';
+                checklistPanel.style.display = 'block';
+                if (templatesPanel) templatesPanel.style.display = 'none';
+
+                updateButton(btnImprove, true);
+                updateButton(btnDesign, false);
+                updateButton(btnTemplates, false);
+            });
+
+            if (btnTemplates && templatesPanel) {
+                btnTemplates.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    designPanel.style.display = 'none';
+                    checklistPanel.style.display = 'none';
+                    templatesPanel.style.display = 'block';
+
+                    updateButton(btnTemplates, true);
+                    updateButton(btnDesign, false);
+                    updateButton(btnImprove, false);
+                });
+            }
+        }
     });
 </script>
 {% endblock %}

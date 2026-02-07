@@ -60,11 +60,14 @@ class ExplainableATSEngine:
         self.embedding_model = None
         self._load_embedding_model()
         
-        # Skill importance weights (can be learned from data)
-        self.skill_weights = {}
-        self.experience_weight = 0.25
-        self.education_weight = 0.15
-        self.skill_match_weight = 0.60
+        # Enhanced Industry Standard Weights
+        self.weights = {
+            'skills': 0.35,        # 35% - Hard & Soft Skills (Core)
+            'experience': 0.20,    # 20% - Work History & Years
+            'education': 0.15,     # 15% - Degree & Field
+            'formatting': 0.15,    # 15% - Structure, Sections, Readability
+            'content': 0.15        # 15% - Impact, Metrics, Contact Info
+        }
         
     def _load_embedding_model(self):
         """Load sentence transformer model for embeddings"""
@@ -135,33 +138,39 @@ class ExplainableATSEngine:
         job_required_lower = [s.lower().strip() for s in job_required_skills if s]
         job_preferred_lower = [s.lower().strip() for s in job_preferred_skills if s]
         
-        # Analyze skill matches
+        # 1. Skill Analysis
         skill_matches = self._analyze_skill_matches(
             resume_skills_lower,
             job_required_lower,
             job_preferred_lower
         )
-        
-        # Calculate skill match score
         skill_match_score = self._calculate_skill_score(skill_matches)
         
-        # Analyze experience match
+        # 2. Experience Analysis
         experience_match = self._analyze_experience_match(
             resume_experience_years,
             job_required_experience
         )
         
-        # Analyze education match
+        # 3. Education Analysis
         education_match = self._analyze_education_match(
             resume_education,
             job_required_education
         )
         
-        # Calculate overall score
+        # 4. Formatting Analysis
+        formatting_match = self._analyze_formatting(resume_text)
+        
+        # 5. Content Quality Analysis
+        content_match = self._analyze_content_quality(resume_text, job_description)
+        
+        # Calculate overall weighted score
         overall_score = (
-            skill_match_score * self.skill_match_weight +
-            experience_match['score'] * self.experience_weight +
-            education_match['score'] * self.education_weight
+            skill_match_score * self.weights['skills'] +
+            experience_match['score'] * self.weights['experience'] +
+            education_match['score'] * self.weights['education'] +
+            formatting_match['score'] * self.weights['formatting'] +
+            content_match['score'] * self.weights['content']
         )
         
         # Compute feature importance
@@ -191,6 +200,10 @@ class ExplainableATSEngine:
             overall_score
         )
         
+        # Append structure/content suggestions
+        improvement_suggestions.extend(formatting_match.get('suggestions', []))
+        improvement_suggestions.extend(content_match.get('suggestions', []))
+        
         # Categorize skills
         missing_skills = [m for m in skill_matches if m.match_type == 'missing']
         weak_skills = [m for m in skill_matches if m.match_type == 'weak']
@@ -198,11 +211,13 @@ class ExplainableATSEngine:
         strong_matches = [m for m in skill_matches if m.match_type in ['exact', 'semantic']]
         
         return ATSExplanation(
-            overall_score=round(overall_score, 2),
+            overall_score=round(overall_score, 1),
             score_breakdown={
-                'skill_match': round(skill_match_score, 2),
-                'experience_match': round(experience_match['score'], 2),
-                'education_match': round(education_match['score'], 2)
+                'Skill Match': round(skill_match_score, 1),
+                'Experience': round(experience_match['score'], 1),
+                'Education': round(education_match['score'], 1),
+                'Formatting': round(formatting_match['score'], 1),
+                'Content Quality': round(content_match['score'], 1)
             },
             missing_skills=missing_skills,
             weak_skills=weak_skills,
@@ -213,6 +228,103 @@ class ExplainableATSEngine:
             acceptance_factors=acceptance_factors,
             improvement_suggestions=improvement_suggestions
         )
+
+    def _analyze_formatting(self, resume_text: str) -> Dict:
+        """Analyze resume formatting and structure"""
+        if not resume_text:
+            return {'score': 50.0, 'suggestions': []}
+            
+        score = 100.0
+        suggestions = []
+        text_upper = resume_text.upper()
+        
+        # Check for standard sections
+        required_sections = ['EXPERIENCE', 'EDUCATION', 'SKILLS']
+        found_sections = [sec for sec in required_sections if sec in text_upper]
+        
+        missing_sections = set(required_sections) - set(found_sections)
+        if missing_sections:
+            score -= 20 * len(missing_sections)
+            for sec in missing_sections:
+                suggestions.append({
+                    'type': 'formatting',
+                    'priority': 'high',
+                    'action': f"Add section: {sec.title()}",
+                    'reason': "Standard section missing, confusing ATS parsers.",
+                    'expected_score_increase': 5
+                })
+        
+        # Check length (approx word count)
+        word_count = len(resume_text.split())
+        if word_count < 200:
+            score -= 20
+            suggestions.append({
+                'type': 'formatting',
+                'priority': 'high',
+                'action': "Increase content length",
+                'reason': "Resume is too short (< 200 words), lacking detail.",
+                'expected_score_increase': 5
+            })
+        elif word_count > 2000:
+             score -= 10
+             suggestions.append({
+                'type': 'formatting',
+                'priority': 'medium',
+                'action': "Condense content",
+                'reason': "Resume is too long (> 2000 words), typically 1-2 pages is best.",
+                'expected_score_increase': 3
+            })
+            
+        return {'score': max(0, score), 'suggestions': suggestions}
+
+    def _analyze_content_quality(self, resume_text: str, jd_text: str) -> Dict:
+        """Analyze content impact, metrics, and contact info"""
+        if not resume_text:
+             return {'score': 50.0, 'suggestions': []}
+             
+        score = 100.0
+        suggestions = []
+        text_lower = resume_text.lower()
+        
+        # 1. Contact Info Check
+        if '@' not in text_lower:
+            score -= 30
+            suggestions.append({
+                'type': 'content',
+                'priority': 'critical',
+                'action': "Add Email Address",
+                'reason': "No email found. Recruiters cannot contact you.",
+                'expected_score_increase': 10
+            })
+            
+        # 2. Measurable Results (simple digit check in context)
+        # We look for digits followed by % or words like 'increased', 'reduced' near numbers
+        import re
+        metrics_count = len(re.findall(r'\d+%|\$\d+|\d+ [Ii]ncrease', resume_text))
+        if metrics_count < 3:
+            score -= 20
+            suggestions.append({
+                'type': 'content',
+                'priority': 'medium',
+                'action': "Add Quantifiable Metrics",
+                'reason': "Resume lacks measurable achievements (e.g., 'Increased sales by 20%').",
+                'expected_score_increase': 8
+            })
+            
+        # 3. Action Verbs (simple list)
+        action_verbs = ['led', 'managed', 'developed', 'created', 'designed', 'implemented', 'optimized', 'achieved']
+        found_verbs = [v for v in action_verbs if v in text_lower]
+        if len(found_verbs) < 3:
+            score -= 10
+            suggestions.append({
+                 'type': 'content',
+                 'priority': 'medium',
+                 'action': "Use Strong Action Verbs",
+                 'reason': "Use words like 'Led', 'Developed', 'Optimized' to start bullet points.",
+                 'expected_score_increase': 5
+            })
+            
+        return {'score': max(0, score), 'suggestions': suggestions}
     
     def _analyze_skill_matches(
         self,
@@ -246,9 +358,9 @@ class ExplainableATSEngine:
                 if semantic_score > best_score:
                     best_score = semantic_score
                     best_match = resume_skill
-                    if semantic_score > 0.8:
+                    if semantic_score > 0.85: # Stricter threshold
                         match_type = 'semantic'
-                    elif semantic_score > 0.6:
+                    elif semantic_score > 0.65:
                         match_type = 'weak'
             
             if best_match:
@@ -289,9 +401,9 @@ class ExplainableATSEngine:
                 if semantic_score > best_score:
                     best_score = semantic_score
                     best_match = resume_skill
-                    if semantic_score > 0.8:
+                    if semantic_score > 0.85:
                         match_type = 'semantic'
-                    elif semantic_score > 0.6:
+                    elif semantic_score > 0.65:
                         match_type = 'weak'
             
             if best_match:
@@ -350,10 +462,10 @@ class ExplainableATSEngine:
                 max_points += 15  # Penalty for missing
             elif match.match_type in ['exact', 'semantic']:
                 max_points += 10 * match.importance
-                total_points += match.expected_score_impact * match.importance
+                total_points += 10 * match.importance * match.confidence # Weighted by confidence
             elif match.match_type == 'weak':
                 max_points += 10 * match.importance
-                total_points += match.expected_score_impact * match.importance
+                total_points += 5 * match.importance # Half points for weak
         
         if max_points == 0:
             return 0.0
@@ -383,13 +495,13 @@ class ExplainableATSEngine:
             score = 100.0
             match = True
         elif gap <= 1:
-            score = 75.0
+            score = 80.0
             match = True
         elif gap <= 2:
-            score = 50.0
+            score = 60.0
             match = False
         else:
-            score = 25.0
+            score = 40.0
             match = False
         
         return {
@@ -439,7 +551,7 @@ class ExplainableATSEngine:
         if resume_level >= required_level:
             return {'score': 100.0, 'match': True}
         else:
-            return {'score': 50.0, 'match': False}
+            return {'score': 60.0, 'match': False}
     
     def _compute_feature_importance(
         self,
@@ -457,11 +569,11 @@ class ExplainableATSEngine:
         
         # Experience importance
         if experience_match['gap'] > 0:
-            importance['experience_years'] = self.experience_weight
+            importance['experience_years'] = self.weights['experience']
         
         # Education importance
         if not education_match['match']:
-            importance['education'] = self.education_weight
+            importance['education'] = self.weights['education']
         
         # Normalize
         total = sum(importance.values())

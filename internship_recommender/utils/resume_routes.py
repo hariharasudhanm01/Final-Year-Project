@@ -134,14 +134,14 @@ def apply_enhancements():
         modified_filename = f"enhanced_{enhancement_data['filename']}"
         modified_path = os.path.join(app.config["UPLOAD_FOLDER"], modified_filename)
         
-        success = resume_editor.apply_modifications_to_docx(
+        success, error_msg = resume_editor.apply_modifications_to_docx(
             enhancement_data['original_path'],
             approved_suggestions,
             modified_path
         )
         
         if not success:
-            flash("Error applying modifications to resume")
+            flash(f"Error applying modifications: {error_msg}")
             return redirect(url_for("enhance_resume"))
         
         # Save to database

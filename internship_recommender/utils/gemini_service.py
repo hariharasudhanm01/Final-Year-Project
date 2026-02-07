@@ -48,6 +48,43 @@ class GeminiService:
         """
         return self.generate_content(prompt)
 
+    def generate_design_feedback(self, resume_text: str) -> Dict[str, Any]:
+        """
+        Analyzes the resume text structure and generates design feedback and template suggestions.
+        """
+        prompt = f"""
+        Act as a Senior Resume Designer. Analyze the following resume content structure (extracted text) and provide design feedback.
+        
+        Resume Content Preview:
+        {resume_text[:2000]}
+        
+        Provide a JSON response with the following structure:
+        {{
+            "design_score": 7,  // 1-10 based on structure clarity imply from text
+            "critique": ["Point 1", "Point 2"], // 3 bullet points on formatting/structure
+            "recommended_template": "Modern Minimalist", // One of: "Modern Minimalist", "Professional Classic", "Creative Tech", "Academic"
+            "template_reason": "Why this template suits the content"
+        }}
+        
+        CRITICAL: Return ONLY the JSON object.
+        """
+        try:
+            response_text = self.generate_content(prompt)
+            # Cleanup JSON
+            if response_text.startswith("```"):
+                response_text = response_text.split("```")[1].strip()
+                if response_text.startswith("json"):
+                    response_text = response_text[4:].strip()
+            
+            return json.loads(response_text)
+        except Exception:
+            return {
+                "design_score": 5,
+                "critique": ["Ensure consistent spacing", "Use clear section headers", "Quantify achievements where possible"],
+                "recommended_template": "Professional Classic",
+                "template_reason": "Safe choice for most industries."
+            }
+
     def predict_salary(self, resume_summary: str, skills: str, role: str, experience: int) -> Dict[str, Any]:
         """
         Predicts salary range based on profile using Gemini.
@@ -115,6 +152,101 @@ class GeminiService:
             if not os.path.exists(file_path):
                 return {"error": f"File not found: {file_path}"}
 
+            # Handle DOCX separately (Gemini API doesn't support DOCX upload directly yet)
+            if file_path.lower().endswith('.docx'):
+                try:
+                    # Circular import workaround or use local import
+                    from utils.resume_parser import extract_text_from_file
+                    extracted_text = extract_text_from_file(file_path)
+                    
+                    # Create a prompt with the text content instead of file upload
+                    prompt = f"""
+                    Analyze this resume text and extract the following details into a valid JSON object. 
+                    Also provide professional suggestions for LinkedIn and GitHub.
+                    
+                    RESUME TEXT:
+                    {extracted_text}
+                    
+                    Required JSON Structure (Extract ALL available details):
+                    {{
+                        "personal_info": {{
+                            "name": "Full Name",
+                            "email": "Email Address",
+                            "linkedin": "LinkedIn Profile URL (or 'Not Found')",
+                            "github": "GitHub Profile URL (or 'Not Found')",
+                            "phone": "Phone Number (optional)",
+                            "summary": "Professional Summary to appear at top of resume"
+                        }},
+                        "education": [
+                            {{
+                                "degree": "Degree Name",
+                                "institution": "College/University Name",
+                                "year": "Year of Completion/Study",
+                                "score": "CGPA/Percentage (optional)"
+                            }}
+                        ],
+                        "skills": {{
+                            "technical": ["Skill 1", "Skill 2"],
+                            "soft": ["Skill 1", "Skill 2"],
+                            "tools": ["Tool 1", "Tool 2"]
+                        }},
+                        "experience": [
+                            {{
+                                "role": "Job Title",
+                                "company": "Company Name",
+                                "duration": "Dates (e.g. Jan 2020 - Present)",
+                                "description": ["Bullet point 1", "Bullet point 2"]
+                            }}
+                        ],
+                        "projects": [
+                            {{
+                                "title": "Project Title",
+                                "technologies": "Tech Stack used",
+                                "description": ["Bullet point 1", "Bullet point 2"]
+                            }}
+                        ],
+                        "certifications": [
+                            "Cert Name - Issuer",
+                            "Cert Name 2"
+                        ],
+                        "achievements": [
+                           "Achievement 1",
+                           "Achievement 2"
+                        ],
+                        "professional_info": {{
+                            "sector": "Primary Sector",
+                            "experience_years": "Total years number"
+                        }},
+                        "suggestions": {{
+                            "linkedin_maintenance": ["Tip 1", "Tip 2"],
+                            "github_project_ideas": [
+                                {{"title": "Idea 1", "description": "Desc", "tech_stack": ["T1", "T2"]}}
+                            ]
+                        }}
+                    }}
+                    
+                    IMPORTANT: Return ONLY the JSON object. Do not wrap it in markdown code blocks.
+                    If a field is not found, use empty list [] or null.
+                    """
+                    
+                    response = self.model.generate_content(prompt)
+                    
+                    # Cleanup text to ensure it's valid JSON
+                    response_text = response.text.strip()
+                    if response_text.startswith("```json"):
+                        response_text = response_text[7:]
+                    if response_text.startswith("```"):
+                        response_text = response_text[3:]
+                    if response_text.endswith("```"):
+                        response_text = response_text[:-3]
+                    
+                    parsed_data = json.loads(response_text)
+                    return parsed_data
+
+                except Exception as e:
+                    print(f"Error processing DOCX in parse_resume: {e}")
+                    return {"error": f"Failed to process DOCX: {str(e)}"}
+
             print(f"Uploading file to Gemini: {file_path}")
             uploaded_file = genai.upload_file(file_path, mime_type=mime_type)
             
@@ -122,49 +254,66 @@ class GeminiService:
             Analyze this resume and extract the following details into a valid JSON object. 
             Also provide professional suggestions for LinkedIn and GitHub.
             
-            Required JSON Structure:
+            Required JSON Structure (Extract ALL available details):
             {
                 "personal_info": {
                     "name": "Full Name",
                     "email": "Email Address",
                     "linkedin": "LinkedIn Profile URL (or 'Not Found')",
                     "github": "GitHub Profile URL (or 'Not Found')",
-                    "phone": "Phone Number (optional)"
+                    "phone": "Phone Number (optional)",
+                    "summary": "Professional Summary to appear at top of resume"
                 },
-                "education": {
-                    "degree": "Degree Name (e.g., B.Tech, B.E.)",
-                    "stream": "Stream/Major (e.g., Computer Science)",
-                    "study_year": "Current Year or Year of Graduation",
-                    "college": "College Name"
+                "education": [
+                    {
+                        "degree": "Degree Name",
+                        "institution": "College/University Name",
+                        "year": "Year of Completion/Study",
+                        "score": "CGPA/Percentage (optional)"
+                    }
+                ],
+                "skills": {
+                    "technical": ["Skill 1", "Skill 2"],
+                    "soft": ["Skill 1", "Skill 2"],
+                    "tools": ["Tool 1", "Tool 2"]
                 },
+                "experience": [
+                    {
+                        "role": "Job Title",
+                        "company": "Company Name",
+                        "duration": "Dates (e.g. Jan 2020 - Present)",
+                        "description": ["Bullet point 1", "Bullet point 2"]
+                    }
+                ],
+                "projects": [
+                    {
+                        "title": "Project Title",
+                        "technologies": "Tech Stack used",
+                        "description": ["Bullet point 1", "Bullet point 2"]
+                    }
+                ],
+                "certifications": [
+                    "Cert Name - Issuer",
+                    "Cert Name 2"
+                ],
+                "achievements": [
+                   "Achievement 1",
+                   "Achievement 2"
+                ],
                 "professional_info": {
-                    "sector": "Primary Sector (e.g., Software Development, Data Science)",
-                    "skills": ["List", "of", "all", "technical", "skills"],
-                    "experience_years": "Total years of experience (or 'Fresher')"
+                    "sector": "Primary Sector",
+                    "experience_years": "Total years number"
                 },
                 "suggestions": {
-                    "linkedin_maintenance": [
-                        "Specific tip 1 based on resume content",
-                        "Specific tip 2...",
-                        "Specific tip 3..."
-                    ],
+                    "linkedin_maintenance": ["Tip 1", "Tip 2"],
                     "github_project_ideas": [
-                        {
-                            "title": "Project Title 1",
-                            "description": "Description of a suitable project based on their skills...",
-                            "tech_stack": ["Tech 1", "Tech 2"]
-                        },
-                         {
-                            "title": "Project Title 2",
-                            "description": "Description...",
-                            "tech_stack": ["Tech 1", "Tech 2"]
-                        }
+                        {"title": "Idea 1", "description": "Desc", "tech_stack": ["T1", "T2"]}
                     ]
                 }
             }
             
             IMPORTANT: Return ONLY the JSON object. Do not wrap it in markdown code blocks.
-            If a field is not found, use null or "Not Mentioned".
+            If a field is not found, use empty list [] or null.
             """
 
             response = self.model.generate_content([prompt, uploaded_file])
